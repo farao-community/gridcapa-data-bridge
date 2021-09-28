@@ -1,0 +1,17 @@
+data-bridge:
+  target-process: ${TARGET_PROCESS:cse-d2cc}
+  sources:
+    ftp:
+      host: ${SOURCE_FTP_HOST:localhost}
+      port: ${SOURCE_FTP_PORT:21}
+      username: ${SOURCE_FTP_USERNAME:gridcapa}
+      password: ${SOURCE_FTP_PASSWORD:gridcapa}
+      base-directory: ${SOURCE_FTP_BASE_DIRECTORY:/data/gridcapa/cse/d2cc/inputs}
+      polling-delay-in-ms: ${SOURCE_FTP_POLLING_DELAY:5000}
+  sinks:
+    minio:
+      url: ${SINK_MINIO_URL:http://localhost:9000}
+      access-key: ${SINK_MINIO_ACCESS_KEY:gridcapa}
+      secret-key: ${SINK_MINIO_SECRET_KEY:gridcapa}
+      bucket: ${SINK_MINIO_BUCKET:gridcapa}
+      base-directory: ${SINK_MINIO_BASE_DIRECTORY:/inputs}
