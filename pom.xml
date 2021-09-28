@@ -27,9 +27,11 @@
         <!-- Dependency versions -->
         <maven.checkstyle.version>3.1.1</maven.checkstyle.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
+        <maven.jacoco.version>0.8.5</maven.jacoco.version>
         <maven.surefire.version>2.22.2</maven.surefire.version>
         <springboot.dependencies.version>2.3.6.RELEASE</springboot.dependencies.version>
         <spring.integration.aws.version>2.4.0</spring.integration.aws.version>
+        <spring.integration.zip.version>1.0.3.RELEASE</spring.integration.zip.version>
     </properties>
 
     <build>
@@ -116,6 +118,34 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${maven.jacoco.version}</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-jacoco-agent</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>generate-jacoco-report</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -140,6 +170,22 @@
         <dependency>
             <groupId>org.springframework.integration</groupId>
             <artifactId>spring-integration-ftp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-zip</artifactId>
+            <version>${spring.integration.zip.version}</version>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
