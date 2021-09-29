@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2021, RTE (http://www.rte-france.com)
  */
-package com.farao_community.farao.gridcapa.data_bridge;
+package com.farao_community.farao.gridcapa.data_bridge.sources;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;

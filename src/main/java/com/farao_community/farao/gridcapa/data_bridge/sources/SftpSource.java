@@ -1,4 +1,4 @@
-package com.farao_community.farao.gridcapa.data_bridge;
+package com.farao_community.farao.gridcapa.data_bridge.sources;
 
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 import org.springframework.beans.factory.annotation.Value;

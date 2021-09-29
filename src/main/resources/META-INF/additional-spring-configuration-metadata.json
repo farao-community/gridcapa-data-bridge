@@ -1,0 +1,94 @@
+{
+  "properties": [
+    {
+      "name": "data-bridge.target-process",
+      "type": "java.lang.String",
+      "description": "Target process to be added as input files metadata."
+    },
+    {
+      "name": "data-bridge.sources.ftp.host",
+      "type": "java.lang.String",
+      "description": "Host of input files FTP archives source."
+    },
+    ,
+    {
+      "name": "data-bridge.sources.ftp.port",
+      "type": "java.lang.String",
+      "description": "Port of input files FTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.ftp.username",
+      "type": "java.lang.String",
+      "description": "Username of input files FTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.ftp.password",
+      "type": "java.lang.String",
+      "description": "Password of input files FTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.ftp.base-directory",
+      "type": "java.lang.String",
+      "description": "Base directory of input files FTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.ftp.polling-delay-in-ms",
+      "type": "java.lang.String",
+      "description": "Polling delay in ms of input files FTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.sftp.host",
+      "type": "java.lang.String",
+      "description": "Host of input files SFTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.sftp.port",
+      "type": "java.lang.String",
+      "description": "Port of input files FTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.sftp.username",
+      "type": "java.lang.String",
+      "description": "Username of input files SFTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.sftp.password",
+      "type": "java.lang.String",
+      "description": "Password of input files SFTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.sftp.base-directory",
+      "type": "java.lang.String",
+      "description": "Base directory of input files SFTP archives source."
+    },
+    {
+      "name": "data-bridge.sources.sftp.polling-delay-in-ms",
+      "type": "java.lang.String",
+      "description": "Polling delay in ms of input files SFTP archives source."
+    },
+    {
+      "name": "data-bridge.sinks.minio.url",
+      "type": "java.lang.String",
+      "description": "URL of MinIO input files sink."
+    },
+    {
+      "name": "data-bridge.sinks.minio.access-key",
+      "type": "java.lang.String",
+      "description": "Access key of MinIO input files sink."
+    },
+    {
+      "name": "data-bridge.sinks.minio.secret-key",
+      "type": "java.lang.String",
+      "description": "Secret key of MinIO input files sink."
+    },
+    {
+      "name": "data-bridge.sinks.minio.bucket",
+      "type": "java.lang.String",
+      "description": "Bucket of MinIO input files sink."
+    },
+    {
+      "name": "data-bridge.sinks.minio.base-directory",
+      "type": "java.lang.String",
+      "description": "Base directory of MinIO input files sink."
+    }
+  ] }
