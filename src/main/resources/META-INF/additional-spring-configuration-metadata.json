@@ -10,7 +10,6 @@
       "type": "java.lang.String",
       "description": "Host of input files FTP archives source."
     },
-    ,
     {
       "name": "data-bridge.sources.ftp.port",
       "type": "java.lang.String",

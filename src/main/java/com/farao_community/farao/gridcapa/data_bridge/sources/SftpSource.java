@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ */
 package com.farao_community.farao.gridcapa.data_bridge.sources;
 
 import com.jcraft.jsch.ChannelSftp.LsEntry;
@@ -6,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.integration.annotation.Poller;
+import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
@@ -14,6 +18,7 @@ import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizer;
 import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
+import org.springframework.messaging.MessageChannel;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +41,11 @@ public class SftpSource {
     private String password;
     @Value("${data-bridge.sources.sftp.base-directory}")
     private String baseDirectory;
+
+    @Bean
+    public MessageChannel sftpSourceChannel() {
+        return new PublishSubscribeChannel();
+    }
 
     @Bean
     public SessionFactory<LsEntry> sftpSessionFactory() {
