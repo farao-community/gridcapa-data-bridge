@@ -1,5 +1,5 @@
 data-bridge:
-  target-process: ${TARGET_PROCESS:cse-d2cc}
+  target-process: ${TARGET_PROCESS:CSE_D2CC}
   file-type: ${FILE_TYPE:CGM}
   sources:
     ftp:

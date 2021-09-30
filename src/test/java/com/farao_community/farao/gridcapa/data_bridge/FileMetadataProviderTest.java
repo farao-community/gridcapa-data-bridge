@@ -31,7 +31,7 @@ class FileMetadataProviderTest {
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
 
-        assertEquals("cse-d2cc", metadataMap.get(fileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
+        assertEquals("CSE_D2CC", metadataMap.get(fileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
         assertEquals("CGM", metadataMap.get(fileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
     }
 }
