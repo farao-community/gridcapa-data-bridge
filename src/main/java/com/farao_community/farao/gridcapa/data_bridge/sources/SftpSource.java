@@ -3,7 +3,6 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge.sources;
 
-import com.jcraft.jsch.ChannelSftp.LsEntry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +12,6 @@ import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
-import org.springframework.integration.file.remote.session.CachingSessionFactory;
-import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizer;
 import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
@@ -47,19 +44,17 @@ public class SftpSource {
         return new PublishSubscribeChannel();
     }
 
-    @Bean
-    public SessionFactory<LsEntry> sftpSessionFactory() {
-        DefaultSftpSessionFactory factory = new DefaultSftpSessionFactory(true);
+    private DefaultSftpSessionFactory sftpSessionFactory() {
+        DefaultSftpSessionFactory factory = new DefaultSftpSessionFactory();
         factory.setHost(host);
         factory.setPort(port);
         factory.setUser(username);
         factory.setPassword(password);
         factory.setAllowUnknownKeys(true);
-        return new CachingSessionFactory<LsEntry>(factory);
+        return factory;
     }
 
-    @Bean
-    public SftpInboundFileSynchronizer sftpInboundFileSynchronizer() {
+    private SftpInboundFileSynchronizer sftpInboundFileSynchronizer() {
         SftpInboundFileSynchronizer synchronizer = new SftpInboundFileSynchronizer(sftpSessionFactory());
         synchronizer.setDeleteRemoteFiles(false);
         synchronizer.setRemoteDirectory(baseDirectory);
