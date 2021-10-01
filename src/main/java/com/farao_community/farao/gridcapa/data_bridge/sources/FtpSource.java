@@ -39,15 +39,15 @@ public class FtpSource {
     private final ApplicationContext applicationContext;
 
     @Value("${data-bridge.sources.ftp.host}")
-    private String host;
+    private String ftpHost;
     @Value("${data-bridge.sources.ftp.port}")
-    private int port;
+    private int ftpPort;
     @Value("${data-bridge.sources.ftp.username}")
-    private String username;
+    private String ftpUsername;
     @Value("${data-bridge.sources.ftp.password}")
-    private String password;
+    private String ftpPassword;
     @Value("${data-bridge.sources.ftp.base-directory}")
-    private String baseDirectory;
+    private String ftpBaseDirectory;
 
     public FtpSource(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
@@ -60,10 +60,10 @@ public class FtpSource {
 
     private SessionFactory<FTPFile> ftpSessionFactory() {
         DefaultFtpSessionFactory ftpSessionFactory = new DefaultFtpSessionFactory();
-        ftpSessionFactory.setHost(host);
-        ftpSessionFactory.setPort(port);
-        ftpSessionFactory.setUsername(username);
-        ftpSessionFactory.setPassword(password);
+        ftpSessionFactory.setHost(ftpHost);
+        ftpSessionFactory.setPort(ftpPort);
+        ftpSessionFactory.setUsername(ftpUsername);
+        ftpSessionFactory.setPassword(ftpPassword);
         ftpSessionFactory.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
         return ftpSessionFactory;
     }
@@ -72,7 +72,7 @@ public class FtpSource {
         FtpInboundFileSynchronizer fileSynchronizer = new FtpInboundFileSynchronizer(ftpSessionFactory());
         fileSynchronizer.setDeleteRemoteFiles(false);
         fileSynchronizer.setBeanFactory(applicationContext);
-        fileSynchronizer.setRemoteDirectory(baseDirectory);
+        fileSynchronizer.setRemoteDirectory(ftpBaseDirectory);
         fileSynchronizer.setFilter(Arrays::asList);
         return fileSynchronizer;
     }
