@@ -1,7 +1,10 @@
 /*
  * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.gridcapa.data_bridge;
+package com.farao_community.farao.gridcapa.data_bridge.sources;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -56,16 +59,16 @@ public class FtpSource {
     }
 
     private SessionFactory<FTPFile> ftpSessionFactory() {
-        DefaultFtpSessionFactory sf = new DefaultFtpSessionFactory();
-        sf.setHost(host);
-        sf.setPort(port);
-        sf.setUsername(username);
-        sf.setPassword(password);
-        sf.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
-        return sf;
+        DefaultFtpSessionFactory ftpSessionFactory = new DefaultFtpSessionFactory();
+        ftpSessionFactory.setHost(host);
+        ftpSessionFactory.setPort(port);
+        ftpSessionFactory.setUsername(username);
+        ftpSessionFactory.setPassword(password);
+        ftpSessionFactory.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
+        return ftpSessionFactory;
     }
 
-    public FtpInboundFileSynchronizer ftpInboundFileSynchronizer() {
+    private FtpInboundFileSynchronizer ftpInboundFileSynchronizer() {
         FtpInboundFileSynchronizer fileSynchronizer = new FtpInboundFileSynchronizer(ftpSessionFactory());
         fileSynchronizer.setDeleteRemoteFiles(false);
         fileSynchronizer.setBeanFactory(applicationContext);

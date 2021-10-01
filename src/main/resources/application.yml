@@ -1,5 +1,6 @@
 data-bridge:
-  target-process: ${TARGET_PROCESS:cse-d2cc}
+  target-process: ${TARGET_PROCESS:CSE_D2CC}
+  file-type: ${FILE_TYPE:CGM}
   sources:
     ftp:
       host: ${SOURCE_FTP_HOST:localhost}
@@ -8,6 +9,13 @@ data-bridge:
       password: ${SOURCE_FTP_PASSWORD:gridcapa}
       base-directory: ${SOURCE_FTP_BASE_DIRECTORY:/data/gridcapa/cse/d2cc/inputs}
       polling-delay-in-ms: ${SOURCE_FTP_POLLING_DELAY:5000}
+    sftp:
+      host: ${SOURCE_SFTP_HOST:localhost}
+      port: ${SOURCE_SFTP_PORT:2222}
+      username: ${SOURCE_SFTP_USERNAME:gridcapa}
+      password: ${SOURCE_SFTP_PASSWORD:gridcapa}
+      base-directory: ${SOURCE_SFTP_BASE_DIRECTORY:/data/gridcapa/cse/d2cc/inputs}
+      polling-delay-in-ms: ${SOURCE_SFTP_POLLING_DELAY:5000}
   sinks:
     minio:
       url: ${SINK_MINIO_URL:http://localhost:9000}
