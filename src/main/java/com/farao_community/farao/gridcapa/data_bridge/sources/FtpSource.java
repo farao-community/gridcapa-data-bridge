@@ -59,16 +59,16 @@ public class FtpSource {
     }
 
     private SessionFactory<FTPFile> ftpSessionFactory() {
-        DefaultFtpSessionFactory sf = new DefaultFtpSessionFactory();
-        sf.setHost(host);
-        sf.setPort(port);
-        sf.setUsername(username);
-        sf.setPassword(password);
-        sf.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
-        return sf;
+        DefaultFtpSessionFactory ftpSessionFactory = new DefaultFtpSessionFactory();
+        ftpSessionFactory.setHost(host);
+        ftpSessionFactory.setPort(port);
+        ftpSessionFactory.setUsername(username);
+        ftpSessionFactory.setPassword(password);
+        ftpSessionFactory.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
+        return ftpSessionFactory;
     }
 
-    public FtpInboundFileSynchronizer ftpInboundFileSynchronizer() {
+    private FtpInboundFileSynchronizer ftpInboundFileSynchronizer() {
         FtpInboundFileSynchronizer fileSynchronizer = new FtpInboundFileSynchronizer(ftpSessionFactory());
         fileSynchronizer.setDeleteRemoteFiles(false);
         fileSynchronizer.setBeanFactory(applicationContext);
