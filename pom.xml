@@ -10,7 +10,6 @@
         <version>1.0.10</version>
     </parent>
 
-    <groupId>com.farao-community.farao</groupId>
     <artifactId>gridcapa-data-bridge</artifactId>
     <version>1.0-SNAPSHOT</version>
 
