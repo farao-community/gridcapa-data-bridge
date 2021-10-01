@@ -1,0 +1,93 @@
+{
+  "properties": [
+    {
+      "name": "data-bridge.target-process",
+      "type": "java.lang.String",
+      "description": "Target process."
+    },
+    {
+      "name": "data-bridge.sources.ftp.host",
+      "type": "java.lang.String",
+      "description": "Input files FTP host."
+    },
+    {
+      "name": "data-bridge.sources.ftp.port",
+      "type": "java.lang.String",
+      "description": "Input files FTP port."
+    },
+    {
+      "name": "data-bridge.sources.ftp.username",
+      "type": "java.lang.String",
+      "description": "Input files FTP username."
+    },
+    {
+      "name": "data-bridge.sources.ftp.password",
+      "type": "java.lang.String",
+      "description": "Input files FTP password."
+    },
+    {
+      "name": "data-bridge.sources.ftp.base-directory",
+      "type": "java.lang.String",
+      "description": "Input files FTP base directory."
+    },
+    {
+      "name": "data-bridge.sources.ftp.polling-delay-in-ms",
+      "type": "java.lang.String",
+      "description": "Input files FTP polling delay in ms."
+    },
+    {
+      "name": "data-bridge.sources.sftp.host",
+      "type": "java.lang.String",
+      "description": "Input files SFTP host."
+    },
+    {
+      "name": "data-bridge.sources.sftp.port",
+      "type": "java.lang.String",
+      "description": "Input files SFTP port."
+    },
+    {
+      "name": "data-bridge.sources.sftp.username",
+      "type": "java.lang.String",
+      "description": "Input files SFTP username."
+    },
+    {
+      "name": "data-bridge.sources.sftp.password",
+      "type": "java.lang.String",
+      "description": "Input files SFTP password."
+    },
+    {
+      "name": "data-bridge.sources.sftp.base-directory",
+      "type": "java.lang.String",
+      "description": "Input files SFTP base directory."
+    },
+    {
+      "name": "data-bridge.sources.sftp.polling-delay-in-ms",
+      "type": "java.lang.String",
+      "description": "Input files SFTP polling delay in ms."
+    },
+    {
+      "name": "data-bridge.sinks.minio.url",
+      "type": "java.lang.String",
+      "description": "MinIO sink URL."
+    },
+    {
+      "name": "data-bridge.sinks.minio.access-key",
+      "type": "java.lang.String",
+      "description": "MinIO sink access key."
+    },
+    {
+      "name": "data-bridge.sinks.minio.secret-key",
+      "type": "java.lang.String",
+      "description": "MinIO sink secret key."
+    },
+    {
+      "name": "data-bridge.sinks.minio.bucket",
+      "type": "java.lang.String",
+      "description": "MinIO sink bucket."
+    },
+    {
+      "name": "data-bridge.sinks.minio.base-directory",
+      "type": "java.lang.String",
+      "description": "MinIO sink base directory."
+    }
+  ] }
