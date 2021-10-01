@@ -1,9 +1,9 @@
 data-bridge:
   target-process: ${TARGET_PROCESS:CSE_D2CC}
-  file-type: ${FILE_TYPE:CGM}
-  file-regex: ${FILE_REGEX:(?<datetime>[0-9]{8}_[0-9]{4})_.*.(uct|UCT)}
-  file-frequency: ${FILE_FREQUENCY:hourly}
-  datetime-format: ${DATETIME_FORMAT:yyyyMMdd_HHmm}
+  file-type: ${FILE_TYPE:CRAC}
+  file-regex: ${FILE_REGEX:(?<datetime>[0-9]{8}_.*.(xml))}
+  file-frequency: ${FILE_FREQUENCY:daily}
+  datetime-format: ${DATETIME_FORMAT:yyyyMMdd}
   sources:
     ftp:
       host: ${SOURCE_FTP_HOST:localhost}

@@ -59,7 +59,7 @@ public class FileTransferFlow {
     private Message<File> addFileNameHeader(Message<File> message) {
         String filename = (String) message.getHeaders().get("file_name");
         return MessageBuilder.fromMessage(message)
-                .setHeader("gridcapa_file_name", filename)
+                .setHeader(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY, filename)
                 .build();
     }
 }
