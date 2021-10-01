@@ -32,15 +32,15 @@ public class SftpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
     @Value("${data-bridge.sources.sftp.host}")
-    private String host;
+    private String sftpHost;
     @Value("${data-bridge.sources.sftp.port}")
-    private int port;
+    private int sftpPort;
     @Value("${data-bridge.sources.sftp.username}")
-    private String username;
+    private String sftpUsername;
     @Value("${data-bridge.sources.sftp.password}")
-    private String password;
+    private String sftpPassword;
     @Value("${data-bridge.sources.sftp.base-directory}")
-    private String baseDirectory;
+    private String sftpBaseDirectory;
 
     @Bean
     public MessageChannel sftpSourceChannel() {
@@ -49,10 +49,10 @@ public class SftpSource {
 
     private DefaultSftpSessionFactory sftpSessionFactory() {
         DefaultSftpSessionFactory factory = new DefaultSftpSessionFactory();
-        factory.setHost(host);
-        factory.setPort(port);
-        factory.setUser(username);
-        factory.setPassword(password);
+        factory.setHost(sftpHost);
+        factory.setPort(sftpPort);
+        factory.setUser(sftpUsername);
+        factory.setPassword(sftpPassword);
         factory.setAllowUnknownKeys(true);
         return factory;
     }
@@ -60,7 +60,7 @@ public class SftpSource {
     private SftpInboundFileSynchronizer sftpInboundFileSynchronizer() {
         SftpInboundFileSynchronizer synchronizer = new SftpInboundFileSynchronizer(sftpSessionFactory());
         synchronizer.setDeleteRemoteFiles(false);
-        synchronizer.setRemoteDirectory(baseDirectory);
+        synchronizer.setRemoteDirectory(sftpBaseDirectory);
         return synchronizer;
     }
 
