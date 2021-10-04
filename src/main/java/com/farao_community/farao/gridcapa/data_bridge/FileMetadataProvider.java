@@ -71,6 +71,7 @@ public class FileMetadataProvider implements MetadataProvider {
                     date = new SimpleDateFormat(fileDateTimePattern).parse(matcher.group("datetime"));
                 } catch (ParseException e) {
                     e.printStackTrace();
+                    return "";
                 }
                 LocalDateTime beginDateTime = date.toInstant()
                         .atZone(ZoneId.systemDefault())
