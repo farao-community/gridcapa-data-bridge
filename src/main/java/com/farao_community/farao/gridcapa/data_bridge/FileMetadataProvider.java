@@ -25,9 +25,6 @@ public class FileMetadataProvider implements MetadataProvider {
     static final String GRIDCAPA_TARGET_PROCESS_METADATA_KEY = "gridcapa_process";
     static final String GRIDCAPA_FILE_TYPE_METADATA_KEY = "gridcapa_file_type";
     static final String GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY = "gridcapa_file_validity_interval";
-    static final String GRIDCAPA_HOURLY_FREQUENCY = "hourly";
-    static final String GRIDCAPA_DAILY_FREQUENCY = "daily";
-    static final String GRIDCAPA_YEARLY_FREQUENCY = "yearly";
 
     @Value("${data-bridge.target-process}")
     private String targetProcess;
