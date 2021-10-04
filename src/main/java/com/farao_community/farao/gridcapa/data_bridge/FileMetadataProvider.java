@@ -10,12 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,10 +36,6 @@ public class FileMetadataProvider implements MetadataProvider {
 
     @Value("${data-bridge.file-regex}")
     private String fileRegex;
-    @Value("${data-bridge.file-frequency}")
-    private String fileFrequency;
-    @Value("${data-bridge.datetime-format}")
-    private String fileDateTimePattern;
 
     @Override
     public void populateMetadata(Message<?> message, Map<String, String> metadata) {
@@ -62,27 +53,13 @@ public class FileMetadataProvider implements MetadataProvider {
         Pattern pattern = Pattern.compile(fileRegex);
         Matcher matcher = pattern.matcher(filename);
         if (matcher.matches()) {
-            if (fileFrequency.equals(GRIDCAPA_HOURLY_FREQUENCY)) {
-                String timeStamp = LocalDateTime.parse(matcher.group("datetime"), DateTimeFormatter.ofPattern(fileDateTimePattern)).toString();
-                return timeStamp + "/" + timeStamp;
-            } else if (fileFrequency.equals(GRIDCAPA_DAILY_FREQUENCY)) {
-                Date date = null;
-                try {
-                    date = new SimpleDateFormat(fileDateTimePattern).parse(matcher.group("datetime"));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    return "";
-                }
-                LocalDateTime beginDateTime = date.toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDateTime();
-                LocalDateTime endDateTime = beginDateTime.plusDays(1).minusHours(1);
-                String beginTimeStamp = beginDateTime.toString();
-                String endTimeStamp = endDateTime.toString();
-                return beginTimeStamp + "/" + endTimeStamp;
-            } else {
-                return "";
-            }
+            int year = Integer.parseInt(matcher.group("year"));
+            int month = Integer.parseInt(matcher.group("month"));
+            int day = Integer.parseInt(matcher.group("day"));
+            int hour = Integer.parseInt(matcher.group("hour"));
+            int minute = Integer.parseInt(matcher.group("minute"));
+            String timeStamp = LocalDateTime.of(year, month, day, hour, minute).toString();
+            return timeStamp + "/" + timeStamp;
         } else {
             return "";
         }
