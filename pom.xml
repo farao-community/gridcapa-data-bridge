@@ -30,6 +30,15 @@
         <spring.integration.zip.version>1.0.3.RELEASE</spring.integration.zip.version>
     </properties>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <!-- Compile dependencies -->
         <dependency>
