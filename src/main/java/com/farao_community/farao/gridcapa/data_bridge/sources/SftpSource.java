@@ -7,6 +7,7 @@
 package com.farao_community.farao.gridcapa.data_bridge.sources;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.InboundChannelAdapter;
@@ -28,6 +29,7 @@ import java.nio.file.Files;
  * @author Alexandre Montigny {@literal <alexandre.montigny at rte-france.com>}
  */
 @Configuration
+@ConditionalOnProperty(prefix = "data-bridge.sources.sftp", name = "active", havingValue = "true")
 public class SftpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 

@@ -9,6 +9,7 @@ package com.farao_community.farao.gridcapa.data_bridge.sources;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,7 @@ import java.util.Arrays;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Configuration
+@ConditionalOnProperty(prefix = "data-bridge.sources.ftp", name = "active", havingValue = "true")
 public class FtpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
