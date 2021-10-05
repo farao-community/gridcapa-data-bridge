@@ -26,3 +26,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Build and publish Docker image
+        if: github.ref == 'refs/heads/master'
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: farao/gridcapa-data-bridge
+          username: farao
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Broadcast update event
+        if: github.ref == 'refs/heads/master'
+        uses: farao-community/broadcast-event@master
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          event-type: gridcapa_data_bridge_updated
