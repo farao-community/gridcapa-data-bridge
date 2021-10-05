@@ -38,17 +38,18 @@ public class FileMetadataProvider implements MetadataProvider {
     public void populateMetadata(Message<?> message, Map<String, String> metadata) {
         metadata.put(GRIDCAPA_TARGET_PROCESS_METADATA_KEY, targetProcess);
         metadata.put(GRIDCAPA_FILE_TYPE_METADATA_KEY, fileType);
-        String fileValidityInterval = getFileValidityIntervalMetadata(message);
+        String fileName = message.getHeaders().get(GRIDCAPA_FILE_NAME_KEY, String.class);
+        metadata.put(GRIDCAPA_FILE_NAME_KEY, fileName);
+        String fileValidityInterval = getFileValidityIntervalMetadata(fileName);
         metadata.put(GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY, fileValidityInterval);
     }
 
-    private String getFileValidityIntervalMetadata(Message<?> message) {
-        String filename = message.getHeaders().get(GRIDCAPA_FILE_NAME_KEY, String.class);
-        if (filename == null || filename.isEmpty()) {
+    private String getFileValidityIntervalMetadata(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
             return "";
         }
         Pattern pattern = Pattern.compile(fileRegex);
-        Matcher matcher = pattern.matcher(filename);
+        Matcher matcher = pattern.matcher(fileName);
         if (matcher.matches()) {
             int year = Integer.parseInt(matcher.group("year"));
             int month = Integer.parseInt(matcher.group("month"));

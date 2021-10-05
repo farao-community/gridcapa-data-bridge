@@ -37,6 +37,18 @@ class FileMetadataProviderTest {
 
         assertEquals("CSE_D2CC", metadataMap.get(FileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
         assertEquals("CGM", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
+        assertEquals("20210101_1430_2D5_CSE1.uct", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY));
         assertEquals("2021-01-01T14:30/2021-01-01T15:30", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+    }
+
+    @Test
+    void checkMidnightOverpass() {
+        Message<?> ucteFileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader("gridcapa_file_name", "20210101_2330_2D5_CSE1.uct")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
+        assertEquals("2021-01-01T23:30/2021-01-02T00:30", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
     }
 }
