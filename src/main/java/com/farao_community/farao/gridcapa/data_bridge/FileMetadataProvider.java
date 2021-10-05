@@ -55,8 +55,11 @@ public class FileMetadataProvider implements MetadataProvider {
             int day = Integer.parseInt(matcher.group("day"));
             int hour = Integer.parseInt(matcher.group("hour"));
             int minute = Integer.parseInt(matcher.group("minute"));
-            String timeStamp = LocalDateTime.of(year, month, day, hour, minute).toString();
-            return timeStamp + "/" + timeStamp;
+            LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
+            LocalDateTime endDateTime = beginDateTime.plusHours(1);
+            String beginDateTimeString = beginDateTime.toString();
+            String endDateTimeString = endDateTime.toString();
+            return beginDateTimeString + "/" + endDateTimeString;
         } else {
             return "";
         }
