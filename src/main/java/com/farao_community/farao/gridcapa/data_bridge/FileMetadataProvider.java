@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 public class FileMetadataProvider implements MetadataProvider {
     public static final String GRIDCAPA_FILE_NAME_KEY = "gridcapa_file_name";
 
-    static final String GRIDCAPA_TARGET_PROCESS_METADATA_KEY = "gridcapa_process";
+    static final String GRIDCAPA_TARGET_PROCESS_METADATA_KEY = "gridcapa_file_target_process";
     static final String GRIDCAPA_FILE_TYPE_METADATA_KEY = "gridcapa_file_type";
     static final String GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY = "gridcapa_file_validity_interval";
 
