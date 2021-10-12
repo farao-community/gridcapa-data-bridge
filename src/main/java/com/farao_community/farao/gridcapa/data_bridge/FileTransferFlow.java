@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.integration.channel.DirectChannel;
@@ -26,12 +27,11 @@ import java.io.File;
  */
 @Component
 public class FileTransferFlow {
-    private final FileNameConfiguration filenamesConfiguration;
+
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
 
-    public FileTransferFlow(FileNameConfiguration filenamesConfiguration) {
-        this.filenamesConfiguration = filenamesConfiguration;
-    }
+    @Value("${data-bridge.file-regex}")
+    private String fileRegex;
 
     @Bean
     public MessageChannel archivesChannel() {
@@ -76,7 +76,7 @@ public class FileTransferFlow {
     }
 
     private boolean isFormatOk(String filename) {
-        return filename.matches(filenamesConfiguration.getFileNameRegex());
+        return filename.matches(fileRegex);
     }
 
 }
