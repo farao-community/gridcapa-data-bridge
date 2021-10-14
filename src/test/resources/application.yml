@@ -1,0 +1,6 @@
+data-bridge:
+  sources:
+    ftp:
+      active: true
+    sftp:
+      active: true
