@@ -6,7 +6,6 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.integration.channel.DirectChannel;
@@ -30,9 +29,6 @@ public class FileTransferFlow {
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
 
-    @Value("${data-bridge.file-regex}")
-    private String fileRegex;
-
     @Bean
     public MessageChannel archivesChannel() {
         return new DirectChannel();
@@ -46,7 +42,6 @@ public class FileTransferFlow {
     @Bean
     public IntegrationFlow unzipArchivesIntegrationFlow() {
         return IntegrationFlows.from("archivesChannel")
-               .filter(Message.class, m -> isFormatOk((String) m.getHeaders().get("file_name")))
                .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"Pre-treatment of file \" + headers.file_name"))
 
                 .<File, Boolean>route(this::isZip, m -> m
@@ -73,10 +68,6 @@ public class FileTransferFlow {
         return MessageBuilder.fromMessage(message)
                 .setHeader(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY, filename)
                 .build();
-    }
-
-    private boolean isFormatOk(String filename) {
-        return filename.matches(fileRegex);
     }
 
 }
