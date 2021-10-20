@@ -32,6 +32,7 @@ import java.nio.file.Files;
 
 /**
  * @author Alexandre Montigny {@literal <alexandre.montigny at rte-france.com>}
+ * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Configuration
 @ConditionalOnProperty(prefix = "data-bridge.sources.sftp", name = "active", havingValue = "true")

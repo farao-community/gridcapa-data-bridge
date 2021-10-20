@@ -56,9 +56,9 @@ public class FtpSource {
     @Value("${data-bridge.sources.ftp.base-directory}")
     private String ftpBaseDirectory;
 
-    public FtpSource(ApplicationContext applicationContext, RemoteFileConfiguration remoteFileRegexConfiguration) {
+    public FtpSource(ApplicationContext applicationContext, RemoteFileConfiguration remoteFileConfiguration) {
         this.applicationContext = applicationContext;
-        this.remoteFileConfiguration = remoteFileRegexConfiguration;
+        this.remoteFileConfiguration = remoteFileConfiguration;
     }
 
     @Bean
