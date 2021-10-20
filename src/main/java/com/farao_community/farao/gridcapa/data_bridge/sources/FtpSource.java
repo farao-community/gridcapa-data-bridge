@@ -43,6 +43,7 @@ public class FtpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
     private final ApplicationContext applicationContext;
+    private final RemoteFileConfiguration remoteFileConfiguration;
 
     @Value("${data-bridge.sources.ftp.host}")
     private String ftpHost;
@@ -55,11 +56,9 @@ public class FtpSource {
     @Value("${data-bridge.sources.ftp.base-directory}")
     private String ftpBaseDirectory;
 
-    @Value("${data-bridge.file-regex}")
-    private String fileRegex;
-
-    public FtpSource(ApplicationContext applicationContext) {
+    public FtpSource(ApplicationContext applicationContext, RemoteFileConfiguration remoteFileRegexConfiguration) {
         this.applicationContext = applicationContext;
+        this.remoteFileConfiguration = remoteFileRegexConfiguration;
     }
 
     @Bean
@@ -85,7 +84,7 @@ public class FtpSource {
         fileSynchronizer.setPreserveTimestamp(true);
         CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
         fileListFilter.addFilter(new FtpPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
-        fileListFilter.addFilter(new FtpRegexPatternFileListFilter(fileRegex));
+        fileListFilter.addFilter(new FtpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
         fileSynchronizer.setFilter(fileListFilter);
         return fileSynchronizer;
     }

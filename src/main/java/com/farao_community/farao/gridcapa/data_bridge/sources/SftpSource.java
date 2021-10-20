@@ -18,9 +18,9 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.file.filters.CompositeFileListFilter;
 import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
-import org.springframework.integration.ftp.filters.FtpPersistentAcceptOnceFileListFilter;
-import org.springframework.integration.ftp.filters.FtpRegexPatternFileListFilter;
 import org.springframework.integration.metadata.SimpleMetadataStore;
+import org.springframework.integration.sftp.filters.SftpPersistentAcceptOnceFileListFilter;
+import org.springframework.integration.sftp.filters.SftpRegexPatternFileListFilter;
 import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizer;
 import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
@@ -38,6 +38,8 @@ import java.nio.file.Files;
 public class SftpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
+    private final RemoteFileConfiguration remoteFileConfiguration;
+
     @Value("${data-bridge.sources.sftp.host}")
     private String sftpHost;
     @Value("${data-bridge.sources.sftp.port}")
@@ -49,8 +51,9 @@ public class SftpSource {
     @Value("${data-bridge.sources.sftp.base-directory}")
     private String sftpBaseDirectory;
 
-    @Value("${data-bridge.file-regex}")
-    private String fileRegex;
+    public SftpSource(RemoteFileConfiguration remoteFileConfiguration) {
+        this.remoteFileConfiguration = remoteFileConfiguration;
+    }
 
     @Bean
     public MessageChannel sftpSourceChannel() {
@@ -73,8 +76,8 @@ public class SftpSource {
         synchronizer.setRemoteDirectory(sftpBaseDirectory);
         synchronizer.setPreserveTimestamp(true);
         CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
-        fileListFilter.addFilter(new FtpPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
-        fileListFilter.addFilter(new FtpRegexPatternFileListFilter(fileRegex));
+        fileListFilter.addFilter(new SftpPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
+        fileListFilter.addFilter(new SftpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
         synchronizer.setFilter(fileListFilter);
         return synchronizer;
     }
