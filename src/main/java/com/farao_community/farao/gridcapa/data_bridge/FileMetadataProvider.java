@@ -6,7 +6,6 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
@@ -26,17 +25,16 @@ public class FileMetadataProvider implements MetadataProvider {
     static final String GRIDCAPA_FILE_TYPE_METADATA_KEY = "gridcapa_file_type";
     static final String GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY = "gridcapa_file_validity_interval";
 
-    @Value("${data-bridge.target-process}")
-    private String targetProcess;
-    @Value("${data-bridge.file-type}")
-    private String fileType;
-    @Value("${data-bridge.file-regex}")
-    private String fileRegex;
+    private final FileMetadataConfiguration fileMetadataConfiguration;
+
+    public FileMetadataProvider(FileMetadataConfiguration fileMetadataConfiguration) {
+        this.fileMetadataConfiguration = fileMetadataConfiguration;
+    }
 
     @Override
     public void populateMetadata(Message<?> message, Map<String, String> metadata) {
-        metadata.put(GRIDCAPA_TARGET_PROCESS_METADATA_KEY, targetProcess);
-        metadata.put(GRIDCAPA_FILE_TYPE_METADATA_KEY, fileType);
+        metadata.put(GRIDCAPA_TARGET_PROCESS_METADATA_KEY, fileMetadataConfiguration.getTargetProcess());
+        metadata.put(GRIDCAPA_FILE_TYPE_METADATA_KEY, fileMetadataConfiguration.getFileType());
         String fileName = message.getHeaders().get(GRIDCAPA_FILE_NAME_KEY, String.class);
         metadata.put(GRIDCAPA_FILE_NAME_KEY, fileName);
         String fileValidityInterval = getFileValidityIntervalMetadata(fileName);
@@ -47,9 +45,36 @@ public class FileMetadataProvider implements MetadataProvider {
         if (fileName == null || fileName.isEmpty()) {
             return "";
         }
-        Pattern pattern = Pattern.compile(fileRegex);
+        Pattern pattern = Pattern.compile(fileMetadataConfiguration.getFileRegex());
         Matcher matcher = pattern.matcher(fileName);
+        String timeValidity = fileMetadataConfiguration.getTimeValidity();
         if (matcher.matches()) {
+            if (timeValidity.equalsIgnoreCase("hourly")) {
+                return getHourlyFileValidityIntervalMetadata(matcher);
+            } else if (timeValidity.equalsIgnoreCase("yearly")) {
+                return getYearlyFileValidityIntervalMetadata(matcher);
+            } else {
+                throw new DataBridgeException(String.format("Unhandled type of time-validity %s.", timeValidity));
+            }
+        } else {
+            return "";
+        }
+    }
+
+    private String getYearlyFileValidityIntervalMetadata(Matcher matcher) {
+        int year;
+        try {
+            year = Integer.parseInt(matcher.group("year"));
+        } catch(IllegalArgumentException e) {
+            throw new DataBridgeException("Malformed regex for yearly file. Year tag is missing.");
+        }
+        LocalDateTime beginDateTime = LocalDateTime.of(year, 1, 1, 0, 0);
+        LocalDateTime endDateTime = beginDateTime.plusYears(1);
+        return beginDateTime + "/" + endDateTime;
+    }
+
+    private String getHourlyFileValidityIntervalMetadata(Matcher matcher) {
+        try {
             int year = Integer.parseInt(matcher.group("year"));
             int month = Integer.parseInt(matcher.group("month"));
             int day = Integer.parseInt(matcher.group("day"));
@@ -57,12 +82,9 @@ public class FileMetadataProvider implements MetadataProvider {
             int minute = Integer.parseInt(matcher.group("minute"));
             LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
             LocalDateTime endDateTime = beginDateTime.plusHours(1);
-            String beginDateTimeString = beginDateTime.toString();
-            String endDateTimeString = endDateTime.toString();
-            return beginDateTimeString + "/" + endDateTimeString;
-        } else {
-            return "";
+            return beginDateTime + "/" + endDateTime;
+        } catch(IllegalArgumentException e) {
+            throw new DataBridgeException("Malformed regex for hourly file. Some tags are missing (year, month, day, hour, minute).");
         }
     }
-
 }
