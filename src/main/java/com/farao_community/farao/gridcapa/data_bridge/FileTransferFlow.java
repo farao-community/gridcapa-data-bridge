@@ -6,10 +6,13 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.zip.splitter.UnZipResultSplitter;
 import org.springframework.integration.zip.transformer.UnZipTransformer;
 import org.springframework.messaging.Message;
@@ -24,6 +27,12 @@ import java.io.File;
  */
 @Component
 public class FileTransferFlow {
+
+    private static final SpelExpressionParser PARSER = new SpelExpressionParser();
+
+    @Value("${data-bridge.file-regex}")
+    private String fileNameRegex;
+
     @Bean
     public MessageChannel archivesChannel() {
         return new DirectChannel();
@@ -37,6 +46,8 @@ public class FileTransferFlow {
     @Bean
     public IntegrationFlow unzipArchivesIntegrationFlow() {
         return IntegrationFlows.from("archivesChannel")
+               .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"Pre-treatment of file \" + headers.file_name"))
+
                 .<File, Boolean>route(this::isZip, m -> m
                         .subFlowMapping(false, flow -> flow
                                 .transform(Message.class, this::addFileNameHeader)
@@ -45,6 +56,7 @@ public class FileTransferFlow {
                         .subFlowMapping(true, flow -> flow
                                 .transform(new UnZipTransformer())
                                 .split(new UnZipResultSplitter())
+                                .filter(Message.class, msg -> isFormatOk((String) msg.getHeaders().get("file_name")))
                                 .transform(Message.class, this::addFileNameHeader)
                                 .channel("filesChannel")
                         )
@@ -62,4 +74,9 @@ public class FileTransferFlow {
                 .setHeader(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY, filename)
                 .build();
     }
+
+    private boolean isFormatOk(String filename) {
+        return filename.matches(fileNameRegex);
+    }
+
 }

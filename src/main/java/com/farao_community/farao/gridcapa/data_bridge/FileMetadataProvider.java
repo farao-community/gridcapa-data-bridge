@@ -30,7 +30,6 @@ public class FileMetadataProvider implements MetadataProvider {
     private String targetProcess;
     @Value("${data-bridge.file-type}")
     private String fileType;
-
     @Value("${data-bridge.file-regex}")
     private String fileRegex;
 

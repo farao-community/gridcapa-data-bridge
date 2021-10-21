@@ -19,16 +19,20 @@ import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.file.filters.CompositeFileListFilter;
+import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
 import org.springframework.integration.file.remote.session.SessionFactory;
+import org.springframework.integration.ftp.filters.FtpPersistentAcceptOnceFileListFilter;
+import org.springframework.integration.ftp.filters.FtpRegexPatternFileListFilter;
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizer;
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
+import org.springframework.integration.metadata.SimpleMetadataStore;
 import org.springframework.messaging.MessageChannel;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Arrays;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -39,6 +43,7 @@ public class FtpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
     private final ApplicationContext applicationContext;
+    private final RemoteFileConfiguration remoteFileConfiguration;
 
     @Value("${data-bridge.sources.ftp.host}")
     private String ftpHost;
@@ -51,8 +56,9 @@ public class FtpSource {
     @Value("${data-bridge.sources.ftp.base-directory}")
     private String ftpBaseDirectory;
 
-    public FtpSource(ApplicationContext applicationContext) {
+    public FtpSource(ApplicationContext applicationContext, RemoteFileConfiguration remoteFileConfiguration) {
         this.applicationContext = applicationContext;
+        this.remoteFileConfiguration = remoteFileConfiguration;
     }
 
     @Bean
@@ -75,7 +81,11 @@ public class FtpSource {
         fileSynchronizer.setDeleteRemoteFiles(false);
         fileSynchronizer.setBeanFactory(applicationContext);
         fileSynchronizer.setRemoteDirectory(ftpBaseDirectory);
-        fileSynchronizer.setFilter(Arrays::asList);
+        fileSynchronizer.setPreserveTimestamp(true);
+        CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
+        fileListFilter.addFilter(new FtpPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
+        fileListFilter.addFilter(new FtpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
+        fileSynchronizer.setFilter(fileListFilter);
         return fileSynchronizer;
     }
 
@@ -86,6 +96,7 @@ public class FtpSource {
                 new FtpInboundFileSynchronizingMessageSource(ftpInboundFileSynchronizer());
         source.setLocalDirectory(Files.createTempDirectory(SYNCHRONIZE_TEMP_DIRECTORY_PREFIX).toFile());
         source.setAutoCreateLocalDirectory(true);
+        source.setLocalFilter(new FileSystemPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
         return source;
     }
 

@@ -16,6 +16,11 @@ import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.file.filters.CompositeFileListFilter;
+import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
+import org.springframework.integration.metadata.SimpleMetadataStore;
+import org.springframework.integration.sftp.filters.SftpPersistentAcceptOnceFileListFilter;
+import org.springframework.integration.sftp.filters.SftpRegexPatternFileListFilter;
 import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizer;
 import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
@@ -27,11 +32,14 @@ import java.nio.file.Files;
 
 /**
  * @author Alexandre Montigny {@literal <alexandre.montigny at rte-france.com>}
+ * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Configuration
 @ConditionalOnProperty(prefix = "data-bridge.sources.sftp", name = "active", havingValue = "true")
 public class SftpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
+
+    private final RemoteFileConfiguration remoteFileConfiguration;
 
     @Value("${data-bridge.sources.sftp.host}")
     private String sftpHost;
@@ -43,6 +51,10 @@ public class SftpSource {
     private String sftpPassword;
     @Value("${data-bridge.sources.sftp.base-directory}")
     private String sftpBaseDirectory;
+
+    public SftpSource(RemoteFileConfiguration remoteFileConfiguration) {
+        this.remoteFileConfiguration = remoteFileConfiguration;
+    }
 
     @Bean
     public MessageChannel sftpSourceChannel() {
@@ -63,6 +75,11 @@ public class SftpSource {
         SftpInboundFileSynchronizer synchronizer = new SftpInboundFileSynchronizer(sftpSessionFactory());
         synchronizer.setDeleteRemoteFiles(false);
         synchronizer.setRemoteDirectory(sftpBaseDirectory);
+        synchronizer.setPreserveTimestamp(true);
+        CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
+        fileListFilter.addFilter(new SftpPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
+        fileListFilter.addFilter(new SftpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
+        synchronizer.setFilter(fileListFilter);
         return synchronizer;
     }
 
@@ -72,6 +89,7 @@ public class SftpSource {
         SftpInboundFileSynchronizingMessageSource source = new SftpInboundFileSynchronizingMessageSource(sftpInboundFileSynchronizer());
         source.setLocalDirectory(Files.createTempDirectory(SYNCHRONIZE_TEMP_DIRECTORY_PREFIX).toFile());
         source.setAutoCreateLocalDirectory(true);
+        source.setLocalFilter(new FileSystemPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
         return source;
     }
 
