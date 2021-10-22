@@ -18,7 +18,7 @@ public class FileMetadataConfiguration {
     private String targetProcess;
     @Value("${data-bridge.file-type}")
     private String fileType;
-    @Value("${data-bridge.time-validity")
+    @Value("${data-bridge.time-validity}")
     private String timeValidity;
     @Value("${data-bridge.file-regex}")
     private String fileRegex;

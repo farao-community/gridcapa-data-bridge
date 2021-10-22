@@ -14,8 +14,4 @@ public class DataBridgeException extends RuntimeException {
     public DataBridgeException(String message) {
         super(message);
     }
-
-    public DataBridgeException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }
