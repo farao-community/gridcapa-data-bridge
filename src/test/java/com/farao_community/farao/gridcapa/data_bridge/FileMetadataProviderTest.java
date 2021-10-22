@@ -99,7 +99,7 @@ class FileMetadataProviderTest {
     }
 
     @Test
-    void checkMetadataSetCorrectlyWithYearlyFileAndMalformedFileName() {
+    void checkEmptyTimeValidityIntervalWithYearlyFileAndMalformedFileName() {
         mockConfig(
             "CSE_D2CC",
             "CGM",
@@ -116,11 +116,11 @@ class FileMetadataProviderTest {
         assertEquals("CSE_D2CC", metadataMap.get(FileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
         assertEquals("CGM", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
         assertEquals("test_2021.xml", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY));
-        assertEquals("2021-01-01T00:00/2022-01-01T00:00", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+        assertEquals("", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
     }
 
     @Test
-    void checkMetadataSetCorrectlyWithYearlyFileAndMalformedRegex() {
+    void checkThrowsDataBridgeExceptionWithYearlyFileAndMalformedRegex() {
         mockConfig(
             "CSE_D2CC",
             "CGM",
