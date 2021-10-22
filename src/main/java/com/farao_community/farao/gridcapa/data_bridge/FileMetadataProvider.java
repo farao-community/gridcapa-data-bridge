@@ -65,7 +65,7 @@ public class FileMetadataProvider implements MetadataProvider {
         int year;
         try {
             year = Integer.parseInt(matcher.group("year"));
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new DataBridgeException("Malformed regex for yearly file. Year tag is missing.");
         }
         LocalDateTime beginDateTime = LocalDateTime.of(year, 1, 1, 0, 0);
@@ -83,7 +83,7 @@ public class FileMetadataProvider implements MetadataProvider {
             LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
             LocalDateTime endDateTime = beginDateTime.plusHours(1);
             return beginDateTime + "/" + endDateTime;
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new DataBridgeException("Malformed regex for hourly file. Some tags are missing (year, month, day, hour, minute).");
         }
     }
