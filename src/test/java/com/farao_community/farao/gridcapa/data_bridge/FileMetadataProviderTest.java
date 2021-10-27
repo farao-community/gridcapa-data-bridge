@@ -134,4 +134,62 @@ class FileMetadataProviderTest {
         Map<String, String> metadataMap = new HashMap<>();
         assertThrows(DataBridgeException.class, () -> fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap));
     }
+
+    @Test
+    void checkMetadataSetCorrectlyWithDailyFile() {
+        mockConfig(
+                "CSE_D2CC",
+                "NTC_RED",
+                "DAILY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2}).*"
+        );
+        Message<?> fileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader("gridcapa_file_name", "20210101_test.xml")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(fileMessage, metadataMap);
+
+        assertEquals("CSE_D2CC", metadataMap.get(FileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
+        assertEquals("NTC_RED", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
+        assertEquals("20210101_test.xml", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY));
+        assertEquals("2021-01-01T00:00/2021-01-02T00:00", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+    }
+
+    @Test
+    void checkThrowsDataBridgeExceptionWithDailyFileAndMalformedRegex() {
+        mockConfig(
+                "CSE_D2CC",
+                "NTC_RED",
+                "DAILY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2}).*"
+        );
+        Message<?> fileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader("gridcapa_file_name", "202002_test.xml")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        assertThrows(DataBridgeException.class, () -> fileMetadataProvider.populateMetadata(fileMessage, metadataMap));
+    }
+
+    @Test
+    void checkEmptyTimeValidityIntervalWithDailyFileAndMalformedFileName() {
+        mockConfig(
+                "CSE_D2CC",
+                "NTC_RED",
+                "DAILY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2}).*"
+        );
+        Message<?> fileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader("gridcapa_file_name", "test_20210203.xml")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(fileMessage, metadataMap);
+
+        assertEquals("CSE_D2CC", metadataMap.get(FileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
+        assertEquals("NTC_RED", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
+        assertEquals("test_20210203.xml", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY));
+        assertEquals("", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+    }
 }

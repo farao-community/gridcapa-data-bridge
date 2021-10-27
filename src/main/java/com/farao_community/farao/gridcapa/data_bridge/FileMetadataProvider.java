@@ -51,6 +51,8 @@ public class FileMetadataProvider implements MetadataProvider {
         if (matcher.matches()) {
             if (timeValidity.equalsIgnoreCase("hourly")) {
                 return getHourlyFileValidityIntervalMetadata(matcher);
+            } else if (timeValidity.equalsIgnoreCase("daily")) {
+                return getDailyFileValidityIntervalMetadata(matcher);
             } else if (timeValidity.equalsIgnoreCase("yearly")) {
                 return getYearlyFileValidityIntervalMetadata(matcher);
             } else {
@@ -85,6 +87,19 @@ public class FileMetadataProvider implements MetadataProvider {
             return beginDateTime + "/" + endDateTime;
         } catch (IllegalArgumentException e) {
             throw new DataBridgeException("Malformed regex for hourly file. Some tags are missing (year, month, day, hour, minute).");
+        }
+    }
+
+    private String getDailyFileValidityIntervalMetadata(Matcher matcher) {
+        try {
+            int year = Integer.parseInt(matcher.group("year"));
+            int month = Integer.parseInt(matcher.group("month"));
+            int day = Integer.parseInt(matcher.group("day"));
+            LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, 0, 0);
+            LocalDateTime endDateTime = beginDateTime.plusDays(1);
+            return beginDateTime + "/" + endDateTime;
+        } catch (IllegalArgumentException e) {
+            throw new DataBridgeException("Malformed regex for daily file. Some tags are missing.");
         }
     }
 }
