@@ -9,6 +9,7 @@ package com.farao_community.farao.gridcapa.data_bridge;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -71,9 +72,9 @@ public class FileMetadataProvider implements MetadataProvider {
         } catch (IllegalArgumentException e) {
             throw new DataBridgeException("Malformed regex for yearly file. Year tag is missing.");
         }
-        OffsetDateTime beginDateTime = OffsetDateTime.of(year, 1, 1, 0, 30, 0, 0, ZoneOffset.UTC);
-        OffsetDateTime endDateTime = beginDateTime.plusYears(1);
-        return beginDateTime + "/" + endDateTime;
+        LocalDateTime beginDateTime = LocalDateTime.of(year, 1, 1, 0, 30);
+        LocalDateTime endDateTime = beginDateTime.plusYears(1);
+        return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
     }
 
     private String getHourlyFileValidityIntervalMetadata(Matcher matcher) {
@@ -83,9 +84,9 @@ public class FileMetadataProvider implements MetadataProvider {
             int day = Integer.parseInt(matcher.group("day"));
             int hour = Integer.parseInt(matcher.group("hour"));
             int minute = Integer.parseInt(matcher.group("minute"));
-            OffsetDateTime beginDateTime = OffsetDateTime.of(year, month, day, hour, minute, 0, 0, ZoneOffset.UTC);
-            OffsetDateTime endDateTime = beginDateTime.plusHours(1);
-            return beginDateTime + "/" + endDateTime;
+            LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
+            LocalDateTime endDateTime = beginDateTime.plusHours(1);
+            return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
         } catch (IllegalArgumentException e) {
             throw new DataBridgeException("Malformed regex for hourly file. Some tags are missing (year, month, day, hour, minute).");
         }
@@ -96,11 +97,15 @@ public class FileMetadataProvider implements MetadataProvider {
             int year = Integer.parseInt(matcher.group("year"));
             int month = Integer.parseInt(matcher.group("month"));
             int day = Integer.parseInt(matcher.group("day"));
-            OffsetDateTime beginDateTime = OffsetDateTime.of(year, month, day, 0, 30, 0, 0,  ZoneOffset.UTC);
-            OffsetDateTime endDateTime = beginDateTime.plusDays(1);
-            return beginDateTime + "/" + endDateTime;
+            LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, 0, 30);
+            LocalDateTime endDateTime = beginDateTime.plusDays(1);
+            return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
         } catch (IllegalArgumentException e) {
             throw new DataBridgeException("Malformed regex for daily file. Some tags are missing.");
         }
+    }
+
+    private OffsetDateTime toUtc(LocalDateTime localDateTime) {
+        return OffsetDateTime.of(localDateTime, ZoneOffset.UTC);
     }
 }
