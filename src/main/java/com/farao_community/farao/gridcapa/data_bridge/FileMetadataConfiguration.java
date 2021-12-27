@@ -23,6 +23,9 @@ public class FileMetadataConfiguration {
     @Value("${data-bridge.file-regex}")
     private String fileRegex;
 
+    @Value("${data-bridge.zone-id}")
+    private String zoneId;
+
     public String getTargetProcess() {
         return targetProcess;
     }
@@ -37,5 +40,9 @@ public class FileMetadataConfiguration {
 
     public String getFileRegex() {
         return fileRegex;
+    }
+
+    public String getZoneId() {
+        return zoneId;
     }
 }

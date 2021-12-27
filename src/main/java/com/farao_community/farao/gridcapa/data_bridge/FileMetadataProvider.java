@@ -9,9 +9,7 @@ package com.farao_community.farao.gridcapa.data_bridge;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -105,7 +103,7 @@ public class FileMetadataProvider implements MetadataProvider {
         }
     }
 
-    private OffsetDateTime toUtc(LocalDateTime localDateTime) {
-        return OffsetDateTime.of(localDateTime, ZoneOffset.UTC);
+    private String toUtc(LocalDateTime localDateTime) {
+        return localDateTime.atZone(ZoneId.of(fileMetadataConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC).toString();
     }
 }
