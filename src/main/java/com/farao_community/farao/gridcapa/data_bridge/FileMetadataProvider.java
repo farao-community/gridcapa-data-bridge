@@ -9,7 +9,7 @@ package com.farao_community.farao.gridcapa.data_bridge;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -72,7 +72,7 @@ public class FileMetadataProvider implements MetadataProvider {
         }
         LocalDateTime beginDateTime = LocalDateTime.of(year, 1, 1, 0, 30);
         LocalDateTime endDateTime = beginDateTime.plusYears(1);
-        return beginDateTime + "/" + endDateTime;
+        return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
     }
 
     private String getHourlyFileValidityIntervalMetadata(Matcher matcher) {
@@ -84,7 +84,7 @@ public class FileMetadataProvider implements MetadataProvider {
             int minute = Integer.parseInt(matcher.group("minute"));
             LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
             LocalDateTime endDateTime = beginDateTime.plusHours(1);
-            return beginDateTime + "/" + endDateTime;
+            return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
         } catch (IllegalArgumentException e) {
             throw new DataBridgeException("Malformed regex for hourly file. Some tags are missing (year, month, day, hour, minute).");
         }
@@ -97,9 +97,13 @@ public class FileMetadataProvider implements MetadataProvider {
             int day = Integer.parseInt(matcher.group("day"));
             LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, 0, 30);
             LocalDateTime endDateTime = beginDateTime.plusDays(1);
-            return beginDateTime + "/" + endDateTime;
+            return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
         } catch (IllegalArgumentException e) {
             throw new DataBridgeException("Malformed regex for daily file. Some tags are missing.");
         }
+    }
+
+    private String toUtc(LocalDateTime localDateTime) {
+        return localDateTime.atZone(ZoneId.of(fileMetadataConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC).toString();
     }
 }
