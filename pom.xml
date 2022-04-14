@@ -28,6 +28,7 @@
         <!-- Dependency versions -->
         <spring.integration.aws.version>2.4.0</spring.integration.aws.version>
         <spring.integration.zip.version>1.0.3.RELEASE</spring.integration.zip.version>
+        <gridcapa.starter.minio.adapter.version>0.1.0</gridcapa.starter.minio.adapter.version>
     </properties>
 
     <build>
@@ -41,6 +42,11 @@
 
     <dependencies>
         <!-- Compile dependencies -->
+        <dependency>
+            <groupId>com.farao-community.farao</groupId>
+            <artifactId>gridacapa-starter-minio-adapter</artifactId>
+            <version>${gridcapa.starter.minio.adapter.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
