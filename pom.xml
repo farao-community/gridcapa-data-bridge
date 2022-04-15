@@ -44,7 +44,7 @@
         <!-- Compile dependencies -->
         <dependency>
             <groupId>com.farao-community.farao</groupId>
-            <artifactId>gridacapa-starter-minio-adapter</artifactId>
+            <artifactId>gridcapa-starter-minio-adapter</artifactId>
             <version>${gridcapa.starter.minio.adapter.version}</version>
         </dependency>
         <dependency>
