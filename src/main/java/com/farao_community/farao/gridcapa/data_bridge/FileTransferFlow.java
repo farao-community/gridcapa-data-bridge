@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.minio_adapter.starter.MinioAdapterConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -71,7 +72,7 @@ public class FileTransferFlow {
     private Message<File> addFileNameHeader(Message<File> message) {
         String filename = (String) message.getHeaders().get("file_name");
         return MessageBuilder.fromMessage(message)
-                .setHeader(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY, filename)
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, filename)
                 .build();
     }
 

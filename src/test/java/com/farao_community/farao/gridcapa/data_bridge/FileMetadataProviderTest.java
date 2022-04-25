@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.minio_adapter.starter.MinioAdapterConstants;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,15 +52,12 @@ class FileMetadataProviderTest {
         );
         Message<?> ucteFileMessage = MessageBuilder
             .withPayload("")
-            .setHeader("gridcapa_file_name", "20210101_1430_2D5_CSE1.uct")
+            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_1430_2D5_CSE1.uct")
             .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
 
-        assertEquals("CSE_D2CC", metadataMap.get(FileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
-        assertEquals("CGM", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
-        assertEquals("20210101_1430_2D5_CSE1.uct", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY));
-        assertEquals("2021-01-01T13:30Z/2021-01-01T14:30Z", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "CGM", "20210101_1430_2D5_CSE1.uct", "2021-01-01T13:30Z/2021-01-01T14:30Z");
     }
 
     @Test
@@ -73,11 +71,11 @@ class FileMetadataProviderTest {
         );
         Message<?> ucteFileMessage = MessageBuilder
             .withPayload("")
-            .setHeader("gridcapa_file_name", "20210101_2330_2D5_CSE1.uct")
+            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_2330_2D5_CSE1.uct")
             .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
-        assertEquals("2021-01-01T23:30Z/2021-01-02T00:30Z", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "CGM", "20210101_2330_2D5_CSE1.uct", "2021-01-01T23:30Z/2021-01-02T00:30Z");
     }
 
     @Test
@@ -91,15 +89,12 @@ class FileMetadataProviderTest {
         );
         Message<?> ucteFileMessage = MessageBuilder
             .withPayload("")
-            .setHeader("gridcapa_file_name", "2021_test.xml")
+            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "2021_test.xml")
             .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
 
-        assertEquals("CSE_D2CC", metadataMap.get(FileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
-        assertEquals("CGM", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
-        assertEquals("2021_test.xml", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY));
-        assertEquals("2020-12-31T23:30Z/2021-12-31T23:30Z", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "CGM", "2021_test.xml", "2020-12-31T23:30Z/2021-12-31T23:30Z");
     }
 
     @Test
@@ -113,15 +108,12 @@ class FileMetadataProviderTest {
         );
         Message<?> ucteFileMessage = MessageBuilder
             .withPayload("")
-            .setHeader("gridcapa_file_name", "test_2021.xml")
+            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "test_2021.xml")
             .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
 
-        assertEquals("CSE_D2CC", metadataMap.get(FileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
-        assertEquals("CGM", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
-        assertEquals("test_2021.xml", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY));
-        assertEquals("", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "CGM", "test_2021.xml", "");
     }
 
     @Test
@@ -135,7 +127,7 @@ class FileMetadataProviderTest {
         );
         Message<?> ucteFileMessage = MessageBuilder
             .withPayload("")
-            .setHeader("gridcapa_file_name", "09_test.xml")
+            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "09_test.xml")
             .build();
         Map<String, String> metadataMap = new HashMap<>();
         assertThrows(DataBridgeException.class, () -> fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap));
@@ -152,15 +144,12 @@ class FileMetadataProviderTest {
         );
         Message<?> fileMessage = MessageBuilder
             .withPayload("")
-            .setHeader("gridcapa_file_name", "20210101_test.xml")
+            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_test.xml")
             .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(fileMessage, metadataMap);
 
-        assertEquals("CSE_D2CC", metadataMap.get(FileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
-        assertEquals("NTC_RED", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
-        assertEquals("20210101_test.xml", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY));
-        assertEquals("2020-12-31T23:30Z/2021-01-01T23:30Z", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "NTC_RED", "20210101_test.xml", "2020-12-31T23:30Z/2021-01-01T23:30Z");
     }
 
     @Test
@@ -174,7 +163,7 @@ class FileMetadataProviderTest {
         );
         Message<?> fileMessage = MessageBuilder
             .withPayload("")
-            .setHeader("gridcapa_file_name", "202002_test.xml")
+            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "202002_test.xml")
             .build();
         Map<String, String> metadataMap = new HashMap<>();
         assertThrows(DataBridgeException.class, () -> fileMetadataProvider.populateMetadata(fileMessage, metadataMap));
@@ -191,14 +180,19 @@ class FileMetadataProviderTest {
         );
         Message<?> fileMessage = MessageBuilder
             .withPayload("")
-            .setHeader("gridcapa_file_name", "test_20210203.xml")
+            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "test_20210203.xml")
             .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(fileMessage, metadataMap);
 
-        assertEquals("CSE_D2CC", metadataMap.get(FileMetadataProvider.GRIDCAPA_TARGET_PROCESS_METADATA_KEY));
-        assertEquals("NTC_RED", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
-        assertEquals("test_20210203.xml", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_KEY));
-        assertEquals("", metadataMap.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "NTC_RED", "test_20210203.xml", "");
+    }
+
+    void assertAllInputFileMetadataEquals(Map<String, String> actualMetadata, String targetProcess, String fileType, String fileName, String fileValidityInterval) {
+        assertEquals(MinioAdapterConstants.DEFAULT_GRIDCAPA_INPUT_GROUP_METADATA_VALUE, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_GROUP_METADATA_KEY));
+        assertEquals(targetProcess, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY));
+        assertEquals(fileType, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
+        assertEquals(fileName, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_METADATA_KEY));
+        assertEquals(fileValidityInterval, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
     }
 }

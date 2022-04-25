@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.minio_adapter.starter.MinioAdapterConstants;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
@@ -19,11 +20,11 @@ import java.util.regex.Pattern;
  */
 @Component
 public class FileMetadataProvider implements MetadataProvider {
-    public static final String GRIDCAPA_FILE_NAME_KEY = "gridcapa_file_name";
-
-    static final String GRIDCAPA_TARGET_PROCESS_METADATA_KEY = "gridcapa_file_target_process";
-    static final String GRIDCAPA_FILE_TYPE_METADATA_KEY = "gridcapa_file_type";
-    static final String GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY = "gridcapa_file_validity_interval";
+    static final String GRIDCAPA_FILE_GROUP_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_GROUP_METADATA_KEY);
+    static final String GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY);
+    static final String GRIDCAPA_FILE_TYPE_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_TYPE_METADATA_KEY);
+    static final String GRIDCAPA_FILE_NAME_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY);
+    static final String GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY);
 
     private final FileMetadataConfiguration fileMetadataConfiguration;
 
@@ -31,12 +32,18 @@ public class FileMetadataProvider implements MetadataProvider {
         this.fileMetadataConfiguration = fileMetadataConfiguration;
     }
 
+    private static String removeXAmzMetaPrefix(String metadataKey) {
+        String prefixToBeRemoved = "x-amz-meta-";
+        return metadataKey.toLowerCase().startsWith(prefixToBeRemoved) ? metadataKey.substring(prefixToBeRemoved.length()) : metadataKey;
+    }
+
     @Override
     public void populateMetadata(Message<?> message, Map<String, String> metadata) {
-        metadata.put(GRIDCAPA_TARGET_PROCESS_METADATA_KEY, fileMetadataConfiguration.getTargetProcess());
+        metadata.put(GRIDCAPA_FILE_GROUP_METADATA_KEY, MinioAdapterConstants.DEFAULT_GRIDCAPA_INPUT_GROUP_METADATA_VALUE);
+        metadata.put(GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY, fileMetadataConfiguration.getTargetProcess());
         metadata.put(GRIDCAPA_FILE_TYPE_METADATA_KEY, fileMetadataConfiguration.getFileType());
-        String fileName = message.getHeaders().get(GRIDCAPA_FILE_NAME_KEY, String.class);
-        metadata.put(GRIDCAPA_FILE_NAME_KEY, fileName);
+        String fileName = message.getHeaders().get(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, String.class);
+        metadata.put(GRIDCAPA_FILE_NAME_METADATA_KEY, fileName);
         String fileValidityInterval = getFileValidityIntervalMetadata(fileName);
         metadata.put(GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY, fileValidityInterval);
     }
