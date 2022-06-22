@@ -71,46 +71,51 @@ public class FileMetadataProvider implements MetadataProvider {
     }
 
     private String getYearlyFileValidityIntervalMetadata(Matcher matcher) {
-        int year;
-        try {
-            year = Integer.parseInt(matcher.group("year"));
-        } catch (IllegalArgumentException e) {
-            throw new DataBridgeException("Malformed regex for yearly file. Year tag is missing.");
-        }
-        LocalDateTime beginDateTime = LocalDateTime.of(year, 1, 1, 0, 30);
+        int year = parseOrThrow(matcher, "year");
+        int month = parseOrDefault(matcher, "month", 1);
+        int dayOfMonth = parseOrDefault(matcher, "day", 1);
+        LocalDateTime beginDateTime = LocalDateTime.of(year, month, dayOfMonth, 0, 30);
         LocalDateTime endDateTime = beginDateTime.plusYears(1);
         return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
     }
 
     private String getHourlyFileValidityIntervalMetadata(Matcher matcher) {
-        try {
-            int year = Integer.parseInt(matcher.group("year"));
-            int month = Integer.parseInt(matcher.group("month"));
-            int day = Integer.parseInt(matcher.group("day"));
-            int hour = Integer.parseInt(matcher.group("hour"));
-            int minute = Integer.parseInt(matcher.group("minute"));
-            LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
-            LocalDateTime endDateTime = beginDateTime.plusHours(1);
-            return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
-        } catch (IllegalArgumentException e) {
-            throw new DataBridgeException("Malformed regex for hourly file. Some tags are missing (year, month, day, hour, minute).");
-        }
+        int year = parseOrThrow(matcher, "year");
+        int month = parseOrThrow(matcher, "month");
+        int day = parseOrThrow(matcher, "day");
+        int hour = parseOrThrow(matcher, "hour");
+        int minute = parseOrThrow(matcher, "minute");
+        LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
+        LocalDateTime endDateTime = beginDateTime.plusHours(1);
+        return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
     }
 
     private String getDailyFileValidityIntervalMetadata(Matcher matcher) {
-        try {
-            int year = Integer.parseInt(matcher.group("year"));
-            int month = Integer.parseInt(matcher.group("month"));
-            int day = Integer.parseInt(matcher.group("day"));
-            LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, 0, 30);
-            LocalDateTime endDateTime = beginDateTime.plusDays(1);
-            return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
-        } catch (IllegalArgumentException e) {
-            throw new DataBridgeException("Malformed regex for daily file. Some tags are missing.");
-        }
+        int year = parseOrThrow(matcher, "year");
+        int month = parseOrThrow(matcher, "month");
+        int day = parseOrThrow(matcher, "day");
+        LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, 0, 30);
+        LocalDateTime endDateTime = beginDateTime.plusDays(1);
+        return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
     }
 
     private String toUtc(LocalDateTime localDateTime) {
         return localDateTime.atZone(ZoneId.of(fileMetadataConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC).toString();
+    }
+
+    private int parseOrThrow(Matcher matcher, String groupName) {
+        try {
+            return Integer.parseInt(matcher.group(groupName));
+        } catch (IllegalArgumentException e) {
+            throw new DataBridgeException(String.format("Malformed regex: %s tag is missing.", groupName));
+        }
+    }
+
+    private int parseOrDefault(Matcher matcher, String groupName, int defaultValue) {
+        try {
+            return Integer.parseInt(matcher.group(groupName));
+        } catch (IllegalArgumentException e) {
+            return defaultValue;
+        }
     }
 }

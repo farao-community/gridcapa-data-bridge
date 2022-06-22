@@ -98,6 +98,44 @@ class FileMetadataProviderTest {
     }
 
     @Test
+    void checkMetadataSetCorrectlyWithYearlyFileStartingOnADayInSummer() {
+        mockConfig(
+                "CSE_D2CC",
+                "CGM",
+                "YEARLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2}).*",
+                "Europe/Paris"
+        );
+        Message<?> ucteFileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210615_test.xml")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
+
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "CGM", "20210615_test.xml", "2021-06-14T22:30Z/2022-06-14T22:30Z");
+    }
+
+    @Test
+    void checkMetadataSetCorrectlyWithYearlyFileStartingOnADayDuringWinter() {
+        mockConfig(
+                "CSE_D2CC",
+                "CGM",
+                "YEARLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2}).*",
+                "Europe/Paris"
+        );
+        Message<?> ucteFileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20211105_test.xml")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
+
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "CGM", "20211105_test.xml", "2021-11-04T23:30Z/2022-11-04T23:30Z");
+    }
+
+    @Test
     void checkEmptyTimeValidityIntervalWithYearlyFileAndMalformedFileName() {
         mockConfig(
             "CSE_D2CC",
