@@ -14,6 +14,13 @@ data-bridges:
     username: gridcapa
     password: gridcapa
     polling-delay-in-ms: 5000
+  sftp:
+    active: true
+    host: localhost
+    port: 21
+    username: gridcapa
+    password: gridcapa
+    polling-delay-in-ms: 5000
   data-bridge-list:
     -
       target-process: CSE_D2CC

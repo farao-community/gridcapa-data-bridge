@@ -38,6 +38,9 @@ public class MinioSink {
     private final RemoteFileConfiguration remoteFilesConfiguration;
     private final FileMetadataProvider fileMetadataProvider;
 
+    //depends on this component. do not remove !!!
+    private final FileTransferFlow fileTransferFlow;
+
     @Value("${data-bridge.sinks.minio.url}")
     private String url;
     @Value("${data-bridge.sinks.minio.access-key}")
@@ -47,10 +50,11 @@ public class MinioSink {
     @Value("${data-bridge.sinks.minio.bucket}")
     private String bucket;
 
-    public MinioSink(ApplicationContext applicationContext, RemoteFileConfiguration remoteFilesConfiguration, FileMetadataProvider fileMetadataProvider) {
+    public MinioSink(ApplicationContext applicationContext, RemoteFileConfiguration remoteFilesConfiguration, FileMetadataProvider fileMetadataProvider, FileTransferFlow fileTransferFlow) {
         this.applicationContext = applicationContext;
         this.remoteFilesConfiguration = remoteFilesConfiguration;
         this.fileMetadataProvider = fileMetadataProvider;
+        this.fileTransferFlow = fileTransferFlow;
     }
 
     @PostConstruct
@@ -68,8 +72,6 @@ public class MinioSink {
         return new DirectChannel();
     }
 
-    //@Bean
-    //@ServiceActivator(inputChannel = "filesChannel")
     public MessageHandler s3MessageHandler(FileMetadataProvider fileMetadataProvider, String baseDirectory) {
         S3MessageHandler s3MessageHandler = new S3MessageHandler(amazonS3(), bucket);
         Expression keyExpression = new SpelExpressionParser().parseExpression("'" + baseDirectory + "/' + headers.file_name");

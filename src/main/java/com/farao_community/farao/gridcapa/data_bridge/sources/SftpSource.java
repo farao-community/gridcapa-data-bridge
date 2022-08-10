@@ -36,7 +36,7 @@ import java.nio.file.Files;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Configuration
-@ConditionalOnProperty(prefix = "data-bridges.sftp2", name = "active", havingValue = "true")
+@ConditionalOnProperty(prefix = "data-bridges.sftp", name = "active", havingValue = "true")
 public class SftpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
@@ -44,13 +44,13 @@ public class SftpSource {
     private final RemoteFileConfiguration remoteFilesConfiguration;
 
     @Value("${data-bridges.sftp.host}")
-    private String ftpHost;
+    private String sftpHost;
     @Value("${data-bridges.sftp.port}")
-    private int ftpPort;
+    private int sftpPort;
     @Value("${data-bridges.sftp.username}")
-    private String ftpUsername;
+    private String sftpUsername;
     @Value("${data-bridges.sftp.password}")
-    private String ftpPassword;
+    private String sftpPassword;
 
     @Value("${data-bridges.sftp.polling-delay-in-ms}")
     private Integer polling;
@@ -62,10 +62,10 @@ public class SftpSource {
 
     private DefaultSftpSessionFactory sftpSessionFactory() {
         DefaultSftpSessionFactory sftpSessionFactory = new DefaultSftpSessionFactory();
-        sftpSessionFactory.setHost(ftpHost);
-        sftpSessionFactory.setPort(ftpPort);
-        sftpSessionFactory.setUser(ftpUsername);
-        sftpSessionFactory.setPassword(ftpPassword);
+        sftpSessionFactory.setHost(sftpHost);
+        sftpSessionFactory.setPort(sftpPort);
+        sftpSessionFactory.setUser(sftpUsername);
+        sftpSessionFactory.setPassword(sftpPassword);
         sftpSessionFactory.setAllowUnknownKeys(true);
         sftpSessionFactory.setServerAliveInterval(100);
         return sftpSessionFactory;
@@ -83,9 +83,9 @@ public class SftpSource {
                     .get();
 
             IntegrationFlow ms = this.sftpInboundFlow(bridge);
-            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(ms, bridge.getBridgeIdentifiant() + "_adapter");
+            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(ms, bridge.getBridgeIdentifiant() + "_sftp_adapter");
 
-            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(flow, bridge.getBridgeIdentifiant() + "_flow");
+            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(flow, bridge.getBridgeIdentifiant() + "_sftp_flow");
 
         }
     }
@@ -108,7 +108,6 @@ public class SftpSource {
                                 .poller(Pollers.fixedDelay(polling))
 
                 )
-                //.handle(m -> System.out.println(m.getPayload()))
                 .transform(Message.class, m -> this.addDestination(m, bridge))
                 .channel(bridge.getBridgeIdentifiant() + "_archives_channel")
                 .get();
