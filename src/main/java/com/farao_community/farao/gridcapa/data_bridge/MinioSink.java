@@ -14,16 +14,19 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.farao_community.farao.gridcapa.data_bridge.sources.RemoteFileConfiguration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.aws.outbound.S3MessageHandler;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -31,6 +34,9 @@ import org.springframework.messaging.MessageHandler;
 @Configuration
 public class MinioSink {
     public static final String AWS_CLIENT_SIGNER_TYPE = "AWSS3V4SignerType";
+    private final ApplicationContext applicationContext;
+    private final RemoteFileConfiguration remoteFilesConfiguration;
+    private final FileMetadataProvider fileMetadataProvider;
 
     @Value("${data-bridge.sinks.minio.url}")
     private String url;
@@ -40,17 +46,31 @@ public class MinioSink {
     private String secretKey;
     @Value("${data-bridge.sinks.minio.bucket}")
     private String bucket;
-    @Value("${data-bridge.sinks.minio.base-directory}")
-    private String baseDirectory;
+
+    public MinioSink(ApplicationContext applicationContext, RemoteFileConfiguration remoteFilesConfiguration, FileMetadataProvider fileMetadataProvider) {
+        this.applicationContext = applicationContext;
+        this.remoteFilesConfiguration = remoteFilesConfiguration;
+        this.fileMetadataProvider = fileMetadataProvider;
+    }
+
+    @PostConstruct
+    public void createBean() {
+        this.remoteFilesConfiguration.getDataBridgeList().stream().forEach(bridge -> {
+            MessageHandler mh = s3MessageHandler(this.fileMetadataProvider, bridge.getMinioDirectory());
+            DirectChannel chan = (DirectChannel) this.applicationContext.getBean(bridge.getBridgeIdentifiant() + "_files_channel");
+            chan.subscribe(mh);
+            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(mh, bridge.getBridgeIdentifiant() + "_minio");
+        });
+    }
 
     @Bean
     public MessageChannel minioSinkChannel() {
         return new DirectChannel();
     }
 
-    @Bean
-    @ServiceActivator(inputChannel = "filesChannel")
-    public MessageHandler s3MessageHandler(FileMetadataProvider fileMetadataProvider) {
+    //@Bean
+    //@ServiceActivator(inputChannel = "filesChannel")
+    public MessageHandler s3MessageHandler(FileMetadataProvider fileMetadataProvider, String baseDirectory) {
         S3MessageHandler s3MessageHandler = new S3MessageHandler(amazonS3(), bucket);
         Expression keyExpression = new SpelExpressionParser().parseExpression("'" + baseDirectory + "/' + headers.file_name");
         s3MessageHandler.setKeyExpression(keyExpression);

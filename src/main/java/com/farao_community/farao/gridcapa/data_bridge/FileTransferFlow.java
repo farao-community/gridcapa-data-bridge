@@ -6,9 +6,9 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.gridcapa.data_bridge.sources.RemoteFileConfiguration;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapterConstants;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
@@ -30,36 +30,42 @@ import java.io.File;
 public class FileTransferFlow {
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
+    private final ApplicationContext applicationContext;
 
-    @Value("${data-bridge.file-regex}")
-    private String fileNameRegex;
+    private RemoteFileConfiguration remoteFilesConfiguration;
 
-    @Bean
-    public MessageChannel archivesChannel() {
-        return new DirectChannel();
+    public FileTransferFlow(ApplicationContext applicationContext, RemoteFileConfiguration remoteFilesConfiguration) {
+        this.remoteFilesConfiguration = remoteFilesConfiguration;
+        this.applicationContext = applicationContext;
+        this.remoteFilesConfiguration.getDataBridgeList().stream().forEach(bridge -> {
+            MessageChannel archivesChannel = new DirectChannel();
+            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(archivesChannel, bridge.getBridgeIdentifiant() + "_archives_channel");
+            MessageChannel filesChannel = new DirectChannel();
+            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(filesChannel, bridge.getBridgeIdentifiant() + "_files_channel");
+            IntegrationFlow flow = unzipArchivesIntegrationFlow(
+                    bridge.getBridgeIdentifiant() + "_archives_channel",
+                    bridge.getBridgeIdentifiant() + "_files_channel",
+                    bridge.getFileRegex());
+            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(flow, bridge.getBridgeIdentifiant() + "_unzip_flow");
+        });
     }
 
-    @Bean
-    public MessageChannel filesChannel() {
-        return new DirectChannel();
-    }
-
-    @Bean
-    public IntegrationFlow unzipArchivesIntegrationFlow() {
-        return IntegrationFlows.from("archivesChannel")
+    public IntegrationFlow unzipArchivesIntegrationFlow(String from, String to, String fileRegex) {
+        return IntegrationFlows.from(from)
                .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"Pre-treatment of file \" + headers.file_name"))
 
                 .<File, Boolean>route(this::isZip, m -> m
                         .subFlowMapping(false, flow -> flow
                                 .transform(Message.class, this::addFileNameHeader)
-                                .channel("filesChannel")
+                                .channel(to)
+
                         )
                         .subFlowMapping(true, flow -> flow
                                 .transform(new UnZipTransformer())
                                 .split(new UnZipResultSplitter())
-                                .filter(Message.class, msg -> isFormatOk((String) msg.getHeaders().get("file_name")))
+                                .filter(Message.class, msg -> isFormatOk((String) msg.getHeaders().get("file_name"), fileRegex))
                                 .transform(Message.class, this::addFileNameHeader)
-                                .channel("filesChannel")
+                                .channel(to)
                         )
                 )
                 .get();
@@ -76,8 +82,8 @@ public class FileTransferFlow {
                 .build();
     }
 
-    private boolean isFormatOk(String filename) {
-        return filename.matches(fileNameRegex);
+    private boolean isFormatOk(String filename, String regex) {
+        return filename.matches(regex);
     }
 
 }

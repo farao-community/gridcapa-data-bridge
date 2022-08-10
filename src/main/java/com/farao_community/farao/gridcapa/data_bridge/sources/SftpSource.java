@@ -6,97 +6,123 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge.sources;
 
+import com.farao_community.farao.gridcapa.data_bridge.model.DataBridge;
+import com.jcraft.jsch.ChannelSftp;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.annotation.InboundChannelAdapter;
-import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.channel.PublishSubscribeChannel;
-import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.file.filters.CompositeFileListFilter;
 import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
 import org.springframework.integration.metadata.SimpleMetadataStore;
+import org.springframework.integration.sftp.dsl.Sftp;
 import org.springframework.integration.sftp.filters.SftpPersistentAcceptOnceFileListFilter;
 import org.springframework.integration.sftp.filters.SftpRegexPatternFileListFilter;
-import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizer;
-import org.springframework.integration.sftp.inbound.SftpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.MessageBuilder;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
 /**
- * @author Alexandre Montigny {@literal <alexandre.montigny at rte-france.com>}
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Configuration
-@ConditionalOnProperty(prefix = "data-bridge.sources.sftp", name = "active", havingValue = "true")
+@ConditionalOnProperty(prefix = "data-bridges.sftp2", name = "active", havingValue = "true")
 public class SftpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
-    private final RemoteFileConfiguration remoteFileConfiguration;
+    private final ApplicationContext applicationContext;
+    private final RemoteFileConfiguration remoteFilesConfiguration;
 
-    @Value("${data-bridge.sources.sftp.host}")
-    private String sftpHost;
-    @Value("${data-bridge.sources.sftp.port}")
-    private int sftpPort;
-    @Value("${data-bridge.sources.sftp.username}")
-    private String sftpUsername;
-    @Value("${data-bridge.sources.sftp.password}")
-    private String sftpPassword;
-    @Value("${data-bridge.sources.sftp.base-directory}")
-    private String sftpBaseDirectory;
+    @Value("${data-bridges.sftp.host}")
+    private String ftpHost;
+    @Value("${data-bridges.sftp.port}")
+    private int ftpPort;
+    @Value("${data-bridges.sftp.username}")
+    private String ftpUsername;
+    @Value("${data-bridges.sftp.password}")
+    private String ftpPassword;
 
-    public SftpSource(RemoteFileConfiguration remoteFileConfiguration) {
-        this.remoteFileConfiguration = remoteFileConfiguration;
-    }
+    @Value("${data-bridges.sftp.polling-delay-in-ms}")
+    private Integer polling;
 
-    @Bean
-    public MessageChannel sftpSourceChannel() {
-        return new PublishSubscribeChannel();
+    public SftpSource(ApplicationContext applicationContext, RemoteFileConfiguration remoteFilesConfiguration) {
+        this.applicationContext = applicationContext;
+        this.remoteFilesConfiguration = remoteFilesConfiguration;
     }
 
     private DefaultSftpSessionFactory sftpSessionFactory() {
-        DefaultSftpSessionFactory factory = new DefaultSftpSessionFactory();
-        factory.setHost(sftpHost);
-        factory.setPort(sftpPort);
-        factory.setUser(sftpUsername);
-        factory.setPassword(sftpPassword);
-        factory.setAllowUnknownKeys(true);
-        return factory;
+        DefaultSftpSessionFactory sftpSessionFactory = new DefaultSftpSessionFactory();
+        sftpSessionFactory.setHost(ftpHost);
+        sftpSessionFactory.setPort(ftpPort);
+        sftpSessionFactory.setUser(ftpUsername);
+        sftpSessionFactory.setPassword(ftpPassword);
+        sftpSessionFactory.setAllowUnknownKeys(true);
+        sftpSessionFactory.setServerAliveInterval(100);
+        return sftpSessionFactory;
     }
 
-    private SftpInboundFileSynchronizer sftpInboundFileSynchronizer() {
-        SftpInboundFileSynchronizer synchronizer = new SftpInboundFileSynchronizer(sftpSessionFactory());
-        synchronizer.setDeleteRemoteFiles(false);
-        synchronizer.setRemoteDirectory(sftpBaseDirectory);
-        synchronizer.setPreserveTimestamp(true);
-        CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
+    @PostConstruct
+    public void allSFTP() throws IOException {
+        for (DataBridge bridge : remoteFilesConfiguration.getDataBridgeList()) {
+
+            MessageChannel channel = new PublishSubscribeChannel();
+            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(channel, bridge.getBridgeIdentifiant() + "_sftp");
+
+            IntegrationFlow flow = IntegrationFlows.from(bridge.getBridgeIdentifiant() + "_flow")
+                    .channel("archivesChannel")
+                    .get();
+
+            IntegrationFlow ms = this.sftpInboundFlow(bridge);
+            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(ms, bridge.getBridgeIdentifiant() + "_adapter");
+
+            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(flow, bridge.getBridgeIdentifiant() + "_flow");
+
+        }
+    }
+
+    public IntegrationFlow sftpInboundFlow(DataBridge bridge) throws IOException {
+        CompositeFileListFilter<ChannelSftp.LsEntry> fileListFilter = new CompositeFileListFilter<>();
         fileListFilter.addFilter(new SftpPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
-        fileListFilter.addFilter(new SftpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
-        synchronizer.setFilter(fileListFilter);
-        return synchronizer;
-    }
+        fileListFilter.addFilter(new SftpRegexPatternFileListFilter(String.join("|", bridge.getRemoteFileRegex())));
+        return IntegrationFlows
+                .from(Sftp.inboundAdapter(sftpSessionFactory())
+                                .preserveTimestamp(true)
+                                .deleteRemoteFiles(false)
+                                .remoteDirectory(bridge.getFtpDirectory())
+                                .filter(fileListFilter)
+                                .autoCreateLocalDirectory(true)
+                                .localFilter(new FileSystemPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""))
+                                .localDirectory(Files.createTempDirectory(SYNCHRONIZE_TEMP_DIRECTORY_PREFIX).toFile()),
+                    e -> e.id(bridge.getBridgeIdentifiant() + "_sftp")
+                                .autoStartup(true)
+                                .poller(Pollers.fixedDelay(polling))
 
-    @Bean
-    @InboundChannelAdapter(channel = "sftpSourceChannel", poller = @Poller(fixedDelay = "${data-bridge.sources.sftp.polling-delay-in-ms}"))
-    public MessageSource<File> sftpMessageSource() throws IOException {
-        SftpInboundFileSynchronizingMessageSource source = new SftpInboundFileSynchronizingMessageSource(sftpInboundFileSynchronizer());
-        source.setLocalDirectory(Files.createTempDirectory(SYNCHRONIZE_TEMP_DIRECTORY_PREFIX).toFile());
-        source.setAutoCreateLocalDirectory(true);
-        source.setLocalFilter(new FileSystemPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
-        return source;
-    }
-
-    @Bean
-    public IntegrationFlow sftpPreprocessFlow() {
-        return IntegrationFlows.from("sftpSourceChannel")
-                .channel("archivesChannel")
+                )
+                //.handle(m -> System.out.println(m.getPayload()))
+                .transform(Message.class, m -> this.addDestination(m, bridge))
+                .channel(bridge.getBridgeIdentifiant() + "_archives_channel")
                 .get();
     }
+
+    private Object addDestination(Message<File> message, DataBridge bridge) {
+        return MessageBuilder.fromMessage(message)
+                .setHeader("minio-base-directory", bridge.getMinioDirectory())
+                .setHeader("file-validity", bridge.getTimeValidity())
+                .setHeader("file-pattern", bridge.getFileRegex())
+                .setHeader("target-process", bridge.getTargetProcess())
+                .setHeader("file-type", bridge.getFileType())
+                .setHeader("zone", bridge.getZoneId())
+                .build();
+    }
+
 }
