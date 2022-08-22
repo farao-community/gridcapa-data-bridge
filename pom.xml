@@ -29,6 +29,7 @@
         <spring.integration.aws.version>2.4.0</spring.integration.aws.version>
         <spring.integration.zip.version>1.0.3.RELEASE</spring.integration.zip.version>
         <gridcapa.starter.minio.adapter.version>0.2.0</gridcapa.starter.minio.adapter.version>
+        <lombock.version>1.18.24</lombock.version>
     </properties>
 
     <build>
@@ -92,7 +93,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>${lombock.version}</version>
             <scope>provided</scope>
         </dependency>
 

@@ -16,7 +16,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.farao_community.farao.gridcapa.data_bridge.sources.RemoteFileConfiguration;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.expression.Expression;
@@ -34,11 +34,11 @@ import javax.annotation.PostConstruct;
 @Configuration
 public class MinioSink {
     public static final String AWS_CLIENT_SIGNER_TYPE = "AWSS3V4SignerType";
-    private final ApplicationContext applicationContext;
+    private final AutowireCapableBeanFactory autowireCapableBeanFactory;
     private final RemoteFileConfiguration remoteFilesConfiguration;
     private final FileMetadataProvider fileMetadataProvider;
 
-    //depends on this component. do not remove !!!
+    //depends on this component. do not remove even if it is unused in this class !!!
     private final FileTransferFlow fileTransferFlow;
 
     @Value("${data-bridge.sinks.minio.url}")
@@ -50,8 +50,8 @@ public class MinioSink {
     @Value("${data-bridge.sinks.minio.bucket}")
     private String bucket;
 
-    public MinioSink(ApplicationContext applicationContext, RemoteFileConfiguration remoteFilesConfiguration, FileMetadataProvider fileMetadataProvider, FileTransferFlow fileTransferFlow) {
-        this.applicationContext = applicationContext;
+    public MinioSink(AutowireCapableBeanFactory autowireCapableBeanFactory, RemoteFileConfiguration remoteFilesConfiguration, FileMetadataProvider fileMetadataProvider, FileTransferFlow fileTransferFlow) {
+        this.autowireCapableBeanFactory = autowireCapableBeanFactory;
         this.remoteFilesConfiguration = remoteFilesConfiguration;
         this.fileMetadataProvider = fileMetadataProvider;
         this.fileTransferFlow = fileTransferFlow;
@@ -61,9 +61,9 @@ public class MinioSink {
     public void createBean() {
         this.remoteFilesConfiguration.getDataBridgeList().stream().forEach(bridge -> {
             MessageHandler mh = s3MessageHandler(this.fileMetadataProvider, bridge.getMinioDirectory());
-            DirectChannel chan = (DirectChannel) this.applicationContext.getBean(bridge.getBridgeIdentifiant() + "_files_channel");
+            DirectChannel chan = (DirectChannel) this.autowireCapableBeanFactory.getBean(bridge.getBridgeIdentifiant() + "_files_channel");
             chan.subscribe(mh);
-            this.applicationContext.getAutowireCapableBeanFactory().initializeBean(mh, bridge.getBridgeIdentifiant() + "_minio");
+            this.autowireCapableBeanFactory.initializeBean(mh, bridge.getBridgeIdentifiant() + "_minio");
         });
     }
 
