@@ -37,23 +37,23 @@ import java.util.function.Consumer;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Configuration
-@ConditionalOnProperty(prefix = "data-bridges.sftp", name = "active", havingValue = "true")
+@ConditionalOnProperty(prefix = "data-bridge.sources.sftp", name = "active", havingValue = "true")
 public class SftpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
     private final AutowireCapableBeanFactory autowireCapableBeanFactory;
     private final RemoteFileConfiguration remoteFilesConfiguration;
 
-    @Value("${data-bridges.sftp.host}")
+    @Value("${data-bridge.sources.sftp.host}")
     private String sftpHost;
-    @Value("${data-bridges.sftp.port}")
+    @Value("${data-bridge.sources.sftp.port}")
     private int sftpPort;
-    @Value("${data-bridges.sftp.username}")
+    @Value("${data-bridge.sources.sftp.username}")
     private String sftpUsername;
-    @Value("${data-bridges.sftp.password}")
+    @Value("${data-bridge.sources.sftp.password}")
     private String sftpPassword;
 
-    @Value("${data-bridges.sftp.polling-delay-in-ms}")
+    @Value("${data-bridge.sources.sftp.polling-delay-in-ms}")
     private Integer polling;
 
     public SftpSource(AutowireCapableBeanFactory autowireCapableBeanFactory, RemoteFileConfiguration remoteFilesConfiguration) {
@@ -74,7 +74,7 @@ public class SftpSource {
 
     @PostConstruct
     public void allSFTP() throws IOException {
-        for (DataBridge bridge : remoteFilesConfiguration.getDataBridgeList()) {
+        for (DataBridge bridge : remoteFilesConfiguration.getBridges()) {
             IntegrationFlow ms = this.sftpInboundFlow(bridge);
             this.autowireCapableBeanFactory.initializeBean(ms, bridge.getBridgeIdentifiant() + "_sftp_adapter");
         }

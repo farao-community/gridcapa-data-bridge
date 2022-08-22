@@ -32,7 +32,7 @@ public class FileTransferFlow {
 
     public FileTransferFlow(AutowireCapableBeanFactory autowireCapableBeanFactory, RemoteFileConfiguration remoteFilesConfiguration) {
         this.autowireCapableBeanFactory = autowireCapableBeanFactory;
-        remoteFilesConfiguration.getDataBridgeList().stream().forEach(bridge -> {
+        remoteFilesConfiguration.getBridges().stream().forEach(bridge -> {
             IntegrationFlow flow = unzipArchivesIntegrationFlow(
                     bridge.getBridgeIdentifiant() + "_archives_channel",
                     bridge.getBridgeIdentifiant() + "_files_channel",

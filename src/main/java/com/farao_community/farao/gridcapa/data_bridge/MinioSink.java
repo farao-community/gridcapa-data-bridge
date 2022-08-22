@@ -59,7 +59,7 @@ public class MinioSink {
 
     @PostConstruct
     public void createBean() {
-        this.remoteFilesConfiguration.getDataBridgeList().stream().forEach(bridge -> {
+        this.remoteFilesConfiguration.getBridges().stream().forEach(bridge -> {
             MessageHandler mh = s3MessageHandler(this.fileMetadataProvider, bridge.getMinioDirectory());
             DirectChannel chan = (DirectChannel) this.autowireCapableBeanFactory.getBean(bridge.getBridgeIdentifiant() + "_files_channel");
             chan.subscribe(mh);

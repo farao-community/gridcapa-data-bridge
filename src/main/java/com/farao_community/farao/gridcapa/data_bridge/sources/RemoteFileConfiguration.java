@@ -10,16 +10,16 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Configuration
-@ConfigurationProperties("data-bridges")
+@ConfigurationProperties("data-bridge")
 @ConstructorBinding
 @Data
 public class RemoteFileConfiguration {
-    private List<DataBridge> dataBridgeList;
+    private List<DataBridge> bridges;
     private String zoneId;
 
     @PostConstruct
     public void setZoneIdForBridge() {
-        dataBridgeList.stream().forEach(b -> b.setZoneId(zoneId));
+        bridges.stream().forEach(b -> b.setZoneId(zoneId));
     }
 
 }

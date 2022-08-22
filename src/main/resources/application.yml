@@ -1,4 +1,13 @@
 data-bridge:
+  zone-id: "Europe/Paris"
+  sources:
+    ftp:
+      active: true
+      host: localhost
+      port: 21
+      username: gridcapa
+      password: gridcapa
+      polling-delay-in-ms: 5000
   sinks:
     minio:
       url: http://minio:9000
@@ -6,16 +15,7 @@ data-bridge:
       secret-key: gridcapa
       bucket: gridcapa
 
-data-bridges:
-  zone-id: "Europe/Paris"
-  ftp:
-    active: true
-    host: localhost
-    port: 21
-    username: gridcapa
-    password: gridcapa
-    polling-delay-in-ms: 5000
-  data-bridge-list:
+  bridges:
     -
       target-process: CSE_IMPORT_D2CC
       file-type: CGM

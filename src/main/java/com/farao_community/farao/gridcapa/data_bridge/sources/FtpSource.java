@@ -39,22 +39,22 @@ import java.util.function.Consumer;
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
 @Configuration
-@ConditionalOnProperty(prefix = "data-bridges.ftp", name = "active", havingValue = "true")
+@ConditionalOnProperty(prefix = "data-bridge.sources.ftp", name = "active", havingValue = "true")
 public class FtpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
     private final AutowireCapableBeanFactory autowireCapableBeanFactory;
     private final RemoteFileConfiguration remoteFilesConfiguration;
 
-    @Value("${data-bridges.ftp.host}")
+    @Value("${data-bridge.sources.ftp.host}")
     private String ftpHost;
-    @Value("${data-bridges.ftp.port}")
+    @Value("${data-bridge.sources.ftp.port}")
     private int ftpPort;
-    @Value("${data-bridges.ftp.username}")
+    @Value("${data-bridge.sources.ftp.username}")
     private String ftpUsername;
-    @Value("${data-bridges.ftp.password}")
+    @Value("${data-bridge.sources.ftp.password}")
     private String ftpPassword;
-    @Value("${data-bridges.ftp.polling-delay-in-ms}")
+    @Value("${data-bridge.sources.ftp.polling-delay-in-ms}")
     private Integer polling;
 
     public FtpSource(AutowireCapableBeanFactory autowireCapableBeanFactory, RemoteFileConfiguration remoteFilesConfiguration) {
@@ -74,7 +74,7 @@ public class FtpSource {
 
     @PostConstruct
     public void allFTP() throws IOException {
-        for (DataBridge bridge : remoteFilesConfiguration.getDataBridgeList()) {
+        for (DataBridge bridge : remoteFilesConfiguration.getBridges()) {
             IntegrationFlow ms = this.ftpInboundFlow(bridge);
             this.autowireCapableBeanFactory.initializeBean(ms, bridge.getBridgeIdentifiant() + "_ftp_adapter");
         }
