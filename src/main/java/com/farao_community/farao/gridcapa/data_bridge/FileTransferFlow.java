@@ -6,18 +6,16 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.gridcapa.data_bridge.sources.RemoteFileConfiguration;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapterConstants;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.zip.splitter.UnZipResultSplitter;
 import org.springframework.integration.zip.transformer.UnZipTransformer;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
@@ -30,36 +28,33 @@ import java.io.File;
 public class FileTransferFlow {
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
+    private final AutowireCapableBeanFactory autowireCapableBeanFactory;
 
-    @Value("${data-bridge.file-regex}")
-    private String fileNameRegex;
-
-    @Bean
-    public MessageChannel archivesChannel() {
-        return new DirectChannel();
+    public FileTransferFlow(AutowireCapableBeanFactory autowireCapableBeanFactory, RemoteFileConfiguration remoteFilesConfiguration) {
+        this.autowireCapableBeanFactory = autowireCapableBeanFactory;
+        remoteFilesConfiguration.getBridges().stream().forEach(bridge -> {
+            IntegrationFlow flow = unzipArchivesIntegrationFlow(
+                    bridge.getBridgeIdentifiant() + "_archives_channel",
+                    bridge.getBridgeIdentifiant() + "_files_channel",
+                    bridge.getFileRegex());
+            this.autowireCapableBeanFactory.initializeBean(flow, bridge.getBridgeIdentifiant() + "_unzip_flow");
+        });
     }
 
-    @Bean
-    public MessageChannel filesChannel() {
-        return new DirectChannel();
-    }
-
-    @Bean
-    public IntegrationFlow unzipArchivesIntegrationFlow() {
-        return IntegrationFlows.from("archivesChannel")
+    public IntegrationFlow unzipArchivesIntegrationFlow(String from, String to, String fileRegex) {
+        return IntegrationFlows.from(from)
                .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"Pre-treatment of file \" + headers.file_name"))
-
-                .<File, Boolean>route(this::isZip, m -> m
+               .<File, Boolean>route(this::isZip, m -> m
                         .subFlowMapping(false, flow -> flow
                                 .transform(Message.class, this::addFileNameHeader)
-                                .channel("filesChannel")
+                                .channel(to)
                         )
                         .subFlowMapping(true, flow -> flow
                                 .transform(new UnZipTransformer())
                                 .split(new UnZipResultSplitter())
-                                .filter(Message.class, msg -> isFormatOk((String) msg.getHeaders().get("file_name")))
+                                .filter(Message.class, msg -> isFormatOk((String) msg.getHeaders().get("file_name"), fileRegex))
                                 .transform(Message.class, this::addFileNameHeader)
-                                .channel("filesChannel")
+                                .channel(to)
                         )
                 )
                 .get();
@@ -76,8 +71,7 @@ public class FileTransferFlow {
                 .build();
     }
 
-    private boolean isFormatOk(String filename) {
-        return filename.matches(fileNameRegex);
+    private boolean isFormatOk(String filename, String regex) {
+        return filename.matches(regex);
     }
-
 }
