@@ -62,6 +62,8 @@ public class FileMetadataProvider implements MetadataProvider {
                 return getDailyFileValidityIntervalMetadata(matcher);
             } else if (timeValidity.equalsIgnoreCase("yearly")) {
                 return getYearlyFileValidityIntervalMetadata(matcher);
+            } else if (timeValidity.equalsIgnoreCase("always")) {
+                return getAlwaysFileValidityIntervalMetadata();
             } else {
                 throw new DataBridgeException(String.format("Unhandled type of time-validity %s.", timeValidity));
             }
@@ -96,6 +98,12 @@ public class FileMetadataProvider implements MetadataProvider {
         int day = parseOrThrow(matcher, "day");
         LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, 0, 30);
         LocalDateTime endDateTime = beginDateTime.plusDays(1);
+        return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
+    }
+
+    private String getAlwaysFileValidityIntervalMetadata() {
+        LocalDateTime beginDateTime = LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC);
+        LocalDateTime endDateTime = beginDateTime.plusYears(100);
         return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
     }
 
