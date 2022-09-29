@@ -103,17 +103,17 @@ class FileMetadataProviderTest {
                 "CSE_D2CC",
                 "CGM",
                 "ALWAYS",
-                "(?<year>[0-9]{4}).*",
+                ".*",
                 "Europe/Paris"
         );
         Message<?> ucteFileMessage = MessageBuilder
                 .withPayload("")
-                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "2021_test.xml")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "always_test.xml")
                 .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
 
-        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "CGM", "2021_test.xml", "1969-12-31T23:00Z/2069-12-31T23:00Z");
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "CGM", "always_test.xml", "1969-12-31T23:00Z/2069-12-31T23:00Z");
     }
 
     @Test
