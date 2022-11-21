@@ -41,6 +41,7 @@ import java.nio.file.Files;
 @ConditionalOnProperty(prefix = "data-bridge.sources.ftp", name = "active", havingValue = "true")
 public class FtpSource {
     public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
+    public static final int DATA_TIMEOUT = 5000;
 
     private final ApplicationContext applicationContext;
     private final RemoteFileConfiguration remoteFileConfiguration;
@@ -73,6 +74,7 @@ public class FtpSource {
         ftpSessionFactory.setUsername(ftpUsername);
         ftpSessionFactory.setPassword(ftpPassword);
         ftpSessionFactory.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
+        ftpSessionFactory.setDataTimeout(DATA_TIMEOUT);
         return ftpSessionFactory;
     }
 
