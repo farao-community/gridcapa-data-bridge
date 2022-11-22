@@ -16,6 +16,7 @@ data-bridge:
       password: ${SOURCE_FTP_PASSWORD:gridcapa}
       base-directory: ${SOURCE_FTP_BASE_DIRECTORY:/data/gridcapa/cse/d2cc/inputs}
       polling-delay-in-ms: ${SOURCE_FTP_POLLING_DELAY:5000}
+      file-list-persistence-file: ${SOURCE_FTP_FILE_LIST_PERSISTENCE_FILE:/tmp/gridcapa/ftp-metadata-store.properties}
     sftp:
       active: ${SOURCE_SFTP_ACTIVE:false}
       host: ${SOURCE_SFTP_HOST:localhost}
@@ -24,6 +25,7 @@ data-bridge:
       password: ${SOURCE_SFTP_PASSWORD:gridcapa}
       base-directory: ${SOURCE_SFTP_BASE_DIRECTORY:/data/gridcapa/cse/d2cc/inputs}
       polling-delay-in-ms: ${SOURCE_SFTP_POLLING_DELAY:5000}
+      file-list-persistence-file: ${SOURCE_SFTP_FILE_LIST_PERSISTENCE_FILE:/tmp/gridcapa/sftp-metadata-store.properties}
   sinks:
     minio:
       url: ${SINK_MINIO_URL:http://localhost:9000}

@@ -27,12 +27,15 @@ import org.springframework.integration.ftp.filters.FtpRegexPatternFileListFilter
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizer;
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
+import org.springframework.integration.metadata.ConcurrentMetadataStore;
+import org.springframework.integration.metadata.PropertiesPersistingMetadataStore;
 import org.springframework.integration.metadata.SimpleMetadataStore;
 import org.springframework.messaging.MessageChannel;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -40,8 +43,8 @@ import java.nio.file.Files;
 @Configuration
 @ConditionalOnProperty(prefix = "data-bridge.sources.ftp", name = "active", havingValue = "true")
 public class FtpSource {
-    public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
-    public static final int DATA_TIMEOUT = 5000;
+    private static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
+    private static final int DATA_TIMEOUT = 5000;
 
     private final ApplicationContext applicationContext;
     private final RemoteFileConfiguration remoteFileConfiguration;
@@ -56,6 +59,8 @@ public class FtpSource {
     private String ftpPassword;
     @Value("${data-bridge.sources.ftp.base-directory}")
     private String ftpBaseDirectory;
+    @Value("${data-bridge.sources.ftp.file-list-persistence-file:/tmp/gridcapa/ftp-metadata-store.properties}")
+    private String fileListPersistenceFile;
 
     public FtpSource(ApplicationContext applicationContext, RemoteFileConfiguration remoteFileConfiguration) {
         this.applicationContext = applicationContext;
@@ -78,6 +83,22 @@ public class FtpSource {
         return ftpSessionFactory;
     }
 
+    private ConcurrentMetadataStore createMetadataStoreForFilePersistence() {
+        Path persistenceFilePath = Path.of(fileListPersistenceFile);
+        PropertiesPersistingMetadataStore filePersistenceMetadataStore = new PropertiesPersistingMetadataStore();
+        filePersistenceMetadataStore.setBaseDirectory(persistenceFilePath.getParent().toString());
+        filePersistenceMetadataStore.setFileName(persistenceFilePath.getFileName().toString());
+        filePersistenceMetadataStore.afterPropertiesSet();
+        return filePersistenceMetadataStore;
+    }
+
+    private FtpPersistentAcceptOnceFileListFilter createFilePersistenceFilter() {
+        ConcurrentMetadataStore metadataStore = createMetadataStoreForFilePersistence();
+        FtpPersistentAcceptOnceFileListFilter ftpPersistentAcceptOnceFileListFilter = new FtpPersistentAcceptOnceFileListFilter(metadataStore, "");
+        ftpPersistentAcceptOnceFileListFilter.setFlushOnUpdate(true);
+        return ftpPersistentAcceptOnceFileListFilter;
+    }
+
     private FtpInboundFileSynchronizer ftpInboundFileSynchronizer() {
         FtpInboundFileSynchronizer fileSynchronizer = new FtpInboundFileSynchronizer(ftpSessionFactory());
         fileSynchronizer.setDeleteRemoteFiles(false);
@@ -85,8 +106,8 @@ public class FtpSource {
         fileSynchronizer.setRemoteDirectory(ftpBaseDirectory);
         fileSynchronizer.setPreserveTimestamp(true);
         CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
-        fileListFilter.addFilter(new FtpPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
         fileListFilter.addFilter(new FtpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
+        fileListFilter.addFilter(createFilePersistenceFilter());
         fileSynchronizer.setFilter(fileListFilter);
         return fileSynchronizer;
     }
