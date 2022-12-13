@@ -27,6 +27,7 @@ import org.springframework.integration.ftp.filters.FtpRegexPatternFileListFilter
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizer;
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
+import org.springframework.integration.metadata.PropertiesPersistingMetadataStore;
 import org.springframework.integration.metadata.SimpleMetadataStore;
 import org.springframework.messaging.MessageChannel;
 
@@ -57,9 +58,12 @@ public class FtpSource {
     @Value("${data-bridge.sources.ftp.base-directory}")
     private String ftpBaseDirectory;
 
+    private PropertiesPersistingMetadataStore metadataStore;
+
     public FtpSource(ApplicationContext applicationContext, RemoteFileConfiguration remoteFileConfiguration) {
         this.applicationContext = applicationContext;
         this.remoteFileConfiguration = remoteFileConfiguration;
+        createMetadataStore();
     }
 
     @Bean
@@ -85,7 +89,7 @@ public class FtpSource {
         fileSynchronizer.setRemoteDirectory(ftpBaseDirectory);
         fileSynchronizer.setPreserveTimestamp(true);
         CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
-        fileListFilter.addFilter(new FtpPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
+        fileListFilter.addFilter(new FtpPersistentAcceptOnceFileListFilter(this.metadataStore, ""));
         fileListFilter.addFilter(new FtpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
         fileSynchronizer.setFilter(fileListFilter);
         return fileSynchronizer;
@@ -107,5 +111,11 @@ public class FtpSource {
         return IntegrationFlows.from("ftpSourceChannel")
                 .channel("archivesChannel")
                 .get();
+    }
+
+    private void createMetadataStore() {
+        metadataStore = new PropertiesPersistingMetadataStore();
+        metadataStore.setBaseDirectory(System.getProperty("java.io.tmpdir") + "/spring-integration/");
+        metadataStore.afterPropertiesSet();
     }
 }
