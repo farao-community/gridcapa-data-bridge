@@ -46,6 +46,7 @@ public class FileMetadataProvider implements MetadataProvider {
         metadata.put(GRIDCAPA_FILE_NAME_METADATA_KEY, fileName);
         String fileValidityInterval = getFileValidityIntervalMetadata(fileName);
         metadata.put(GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY, fileValidityInterval);
+        MetadataStore.flushMetadataStore();
     }
 
     private String getFileValidityIntervalMetadata(String fileName) {
