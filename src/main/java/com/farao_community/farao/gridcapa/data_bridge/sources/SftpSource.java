@@ -18,6 +18,8 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.file.filters.CompositeFileListFilter;
 import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
+import org.springframework.integration.metadata.ConcurrentMetadataStore;
+import org.springframework.integration.metadata.PropertiesPersistingMetadataStore;
 import org.springframework.integration.metadata.SimpleMetadataStore;
 import org.springframework.integration.sftp.filters.SftpPersistentAcceptOnceFileListFilter;
 import org.springframework.integration.sftp.filters.SftpRegexPatternFileListFilter;
@@ -29,6 +31,7 @@ import org.springframework.messaging.MessageChannel;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * @author Alexandre Montigny {@literal <alexandre.montigny at rte-france.com>}
@@ -37,7 +40,7 @@ import java.nio.file.Files;
 @Configuration
 @ConditionalOnProperty(prefix = "data-bridge.sources.sftp", name = "active", havingValue = "true")
 public class SftpSource {
-    public static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
+    private static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
 
     private final RemoteFileConfiguration remoteFileConfiguration;
 
@@ -51,6 +54,8 @@ public class SftpSource {
     private String sftpPassword;
     @Value("${data-bridge.sources.sftp.base-directory}")
     private String sftpBaseDirectory;
+    @Value("${data-bridge.sources.sftp.file-list-persistence-file:/tmp/gridcapa/sftp-metadata-store.properties}")
+    private String fileListPersistenceFile;
 
     public SftpSource(RemoteFileConfiguration remoteFileConfiguration) {
         this.remoteFileConfiguration = remoteFileConfiguration;
@@ -71,14 +76,30 @@ public class SftpSource {
         return factory;
     }
 
+    private ConcurrentMetadataStore createMetadataStoreForFilePersistence() {
+        Path persistenceFilePath = Path.of(fileListPersistenceFile);
+        PropertiesPersistingMetadataStore filePersistenceMetadataStore = new PropertiesPersistingMetadataStore();
+        filePersistenceMetadataStore.setBaseDirectory(persistenceFilePath.getParent().toString());
+        filePersistenceMetadataStore.setFileName(persistenceFilePath.getFileName().toString());
+        filePersistenceMetadataStore.afterPropertiesSet();
+        return filePersistenceMetadataStore;
+    }
+
+    private SftpPersistentAcceptOnceFileListFilter createFilePersistenceFilter() {
+        ConcurrentMetadataStore metadataStore = createMetadataStoreForFilePersistence();
+        SftpPersistentAcceptOnceFileListFilter sftpPersistentAcceptOnceFileListFilter = new SftpPersistentAcceptOnceFileListFilter(metadataStore, "");
+        sftpPersistentAcceptOnceFileListFilter.setFlushOnUpdate(true);
+        return sftpPersistentAcceptOnceFileListFilter;
+    }
+
     private SftpInboundFileSynchronizer sftpInboundFileSynchronizer() {
         SftpInboundFileSynchronizer synchronizer = new SftpInboundFileSynchronizer(sftpSessionFactory());
         synchronizer.setDeleteRemoteFiles(false);
         synchronizer.setRemoteDirectory(sftpBaseDirectory);
         synchronizer.setPreserveTimestamp(true);
         CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
-        fileListFilter.addFilter(new SftpPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), ""));
         fileListFilter.addFilter(new SftpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
+        fileListFilter.addFilter(createFilePersistenceFilter());
         synchronizer.setFilter(fileListFilter);
         return synchronizer;
     }
