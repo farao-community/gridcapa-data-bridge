@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.integration.annotation.InboundChannelAdapter;
 import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.channel.PublishSubscribeChannel;
@@ -27,6 +28,7 @@ import org.springframework.integration.ftp.filters.FtpRegexPatternFileListFilter
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizer;
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
+import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.metadata.ConcurrentMetadataStore;
 import org.springframework.integration.metadata.PropertiesPersistingMetadataStore;
 import org.springframework.integration.metadata.SimpleMetadataStore;
@@ -44,6 +46,8 @@ import java.nio.file.Path;
 @ConditionalOnProperty(prefix = "data-bridge.sources.ftp", name = "active", havingValue = "true")
 public class FtpSource {
     private static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
+
+    private static final SpelExpressionParser PARSER = new SpelExpressionParser();
 
     private final ApplicationContext applicationContext;
     private final RemoteFileConfiguration remoteFileConfiguration;
@@ -127,6 +131,7 @@ public class FtpSource {
     @Bean
     public IntegrationFlow ftpPreprocessFlow() {
         return IntegrationFlows.from("ftpSourceChannel")
+                .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"ftp treatment of file \" + headers.file_name"))
                 .channel("archivesChannel")
                 .get();
     }
