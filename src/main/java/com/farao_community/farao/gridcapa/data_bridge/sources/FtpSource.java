@@ -60,7 +60,7 @@ public class FtpSource {
     private String ftpBaseDirectory;
     @Value("${data-bridge.sources.ftp.file-list-persistence-file:/tmp/gridcapa/ftp-metadata-store.properties}")
     private String fileListPersistenceFile;
-    @Value("${data-bridge.sources.ftp.data.timeout:60000}")
+    @Value("${data-bridge.sources.ftp.data-timeout:60000}")
     private int ftpDataTimeout;
 
     public FtpSource(ApplicationContext applicationContext, RemoteFileConfiguration remoteFileConfiguration) {
