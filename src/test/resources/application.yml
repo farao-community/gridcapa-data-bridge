@@ -7,6 +7,7 @@ data-bridge:
   remote-file-regex:
     - ".*.zip"
     - "[0-9]{8}_[0-9]{4}_.*.(uct|UCT)"
+  do-unzip: true
   sources:
     ftp:
       active: true

@@ -33,6 +33,8 @@ public class FileTransferFlow {
 
     @Value("${data-bridge.file-regex}")
     private String fileNameRegex;
+    @Value("${data-bridge.do-unzip}")
+    private boolean doUnzip;
 
     @Bean
     public MessageChannel archivesChannel() {
@@ -49,7 +51,7 @@ public class FileTransferFlow {
         return IntegrationFlows.from("archivesChannel")
                .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"Pre-treatment of file \" + headers.file_name"))
 
-                .<File, Boolean>route(this::isZip, m -> m
+                .<File, Boolean>route(file -> doUnzip && isZip(file), m -> m
                         .subFlowMapping(false, flow -> flow
                                 .transform(Message.class, this::addFileNameHeader)
                                 .channel("filesChannel")
