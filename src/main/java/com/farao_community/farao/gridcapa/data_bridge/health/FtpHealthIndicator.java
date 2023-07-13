@@ -10,6 +10,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
 import org.springframework.integration.ftp.session.FtpSession;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.io.IOException;
  * @author Marc Schwitzguebel {@literal <marc.schwitzguebel at rte-france.com>}
  */
 @Component
+@ConditionalOnProperty(prefix = "data-bridge.sources.ftp", name = "active", havingValue = "true")
 public class FtpHealthIndicator implements HealthIndicator {
 
     @Value("${data-bridge.sources.ftp.host}")
@@ -44,10 +46,8 @@ public class FtpHealthIndicator implements HealthIndicator {
         ftpSessionFactory.setPassword(ftpPassword);
         ftpSessionFactory.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
         ftpSessionFactory.setDataTimeout(ftpDataTimeout);
-
-        FtpSession session = ftpSessionFactory.getSession();
-
         try {
+            FtpSession session = ftpSessionFactory.getSession();
             if (session.test() && session.exists(ftpBaseDirectory)) {
                 return Health.up().build();
             }
