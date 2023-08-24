@@ -72,7 +72,6 @@ public class FileTransferFlow {
     }
 
     private Message<File> addFileNameHeader(Message<File> message) {
-        System.out.println("message:" + message.toString());
         String filename = (String) message.getHeaders().get("file_name");
         return MessageBuilder.fromMessage(message)
                 .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, filename)
@@ -80,7 +79,6 @@ public class FileTransferFlow {
     }
 
     private boolean isFormatOk(String filename) {
-        System.out.println("filename:" + filename);
         return filename.matches(fileNameRegex);
     }
 
