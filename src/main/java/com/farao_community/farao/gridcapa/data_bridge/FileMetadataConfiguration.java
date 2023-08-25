@@ -22,8 +22,6 @@ public class FileMetadataConfiguration {
     private String timeValidity;
     @Value("${data-bridge.file-regex}")
     private String fileRegex;
-    @Value("${data-bridge.do-unzip}")
-    private boolean doUnzip;
 
     @Value("${data-bridge.zone-id}")
     private String zoneId;
@@ -48,7 +46,4 @@ public class FileMetadataConfiguration {
         return zoneId;
     }
 
-    public boolean shouldUnzip() {
-        return doUnzip;
-    }
 }
