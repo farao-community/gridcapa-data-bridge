@@ -45,4 +45,5 @@ public class FileMetadataConfiguration {
     public String getZoneId() {
         return zoneId;
     }
+
 }
