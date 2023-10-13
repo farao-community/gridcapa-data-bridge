@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -110,11 +111,16 @@ public class FtpSource {
         fileSynchronizer.setBeanFactory(applicationContext);
         fileSynchronizer.setRemoteDirectory(ftpBaseDirectory);
         fileSynchronizer.setPreserveTimestamp(true);
+        fileSynchronizer.setComparator(ftpFileTimestampComparator());
         CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
         fileListFilter.addFilter(new FtpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
         fileListFilter.addFilter(createFilePersistenceFilter());
         fileSynchronizer.setFilter(fileListFilter);
         return fileSynchronizer;
+    }
+
+    private static Comparator<FTPFile> ftpFileTimestampComparator() {
+        return (ftpFile1, ftpFile2) -> ftpFile2.getTimestamp().compareTo(ftpFile1.getTimestamp());
     }
 
     @Bean
