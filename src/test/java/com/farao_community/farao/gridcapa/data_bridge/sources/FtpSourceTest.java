@@ -22,26 +22,25 @@ class FtpSourceTest {
     @Test
     void checkftpFileComparator() {
         Calendar cal1 = Calendar.getInstance();
+        cal1.set(2023, Calendar.AUGUST, 11, 14, 53, 55);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.set(2023, Calendar.AUGUST, 11, 14, 53, 56);
         FTPFile file1 = new FTPFile();
         file1.setTimestamp(cal1);
         FTPFile file2 = new FTPFile();
-        file2.setTimestamp(Calendar.getInstance());
-        FTPFile file3 = new FTPFile();
-        file3.setTimestamp(Calendar.getInstance());
+        file2.setTimestamp(cal2);
 
         Comparator<FTPFile> comparator = ReflectionTestUtils.invokeMethod(FtpSource.class, "ftpFileTimestampComparator");
-        Calendar cal2 = Calendar.getInstance();
 
-        file3.setTimestamp(cal2);
-        assertTrue(comparator.compare(file1, file3) > 0);
-        assertTrue(comparator.compare(file3, file1) < 0);
+        assertTrue(comparator.compare(file1, file2) > 0);
+        assertTrue(comparator.compare(file2, file1) < 0);
         assertEquals(0, comparator.compare(file2, file2));
 
         List<FTPFile> toBeSorted = new ArrayList<>();
         toBeSorted.add(file1);
-        toBeSorted.add(file3);
+        toBeSorted.add(file2);
         List<FTPFile> sorted = toBeSorted.stream().sorted(comparator).toList();
-        assertEquals(file3, sorted.get(0));
+        assertEquals(file2, sorted.get(0));
         assertEquals(file1, sorted.get(1));
     }
 }
