@@ -118,7 +118,7 @@ public class FtpSource {
     }
 
     @Bean
-    @InboundChannelAdapter(channel = "ftpSourceChannel", poller = @Poller(fixedDelay = "${data-bridge.sources.ftp.polling-delay-in-ms}"))
+    @InboundChannelAdapter(channel = "ftpSourceChannel", poller = @Poller(fixedDelay = "${data-bridge.sources.ftp.polling-delay-in-ms}", maxMessagesPerPoll = "${data-bridge.sources.ftp.max-messages-per-poll}"))
     public MessageSource<File> ftpMessageSource() throws IOException {
         FtpInboundFileSynchronizingMessageSource source =
                 new FtpInboundFileSynchronizingMessageSource(ftpInboundFileSynchronizer());
