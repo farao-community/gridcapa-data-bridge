@@ -17,6 +17,7 @@ data-bridge:
       password: gridcapa
       base-directory: /data/gridcapa/cse/d2cc/cgms
       polling-delay-in-ms: 5000
+      max-messages-per-poll: 10
     sftp:
       active: true
       host: localhost
@@ -25,6 +26,7 @@ data-bridge:
       password: gridcapa
       base-directory: /data/gridcapa/cse/d2cc/cgms
       polling-delay-in-ms: 5000
+      max-messages-per-poll: 10
   sinks:
     minio:
       url: http://localhost:9000
