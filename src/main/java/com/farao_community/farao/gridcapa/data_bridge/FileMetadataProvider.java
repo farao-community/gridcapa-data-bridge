@@ -107,7 +107,7 @@ public class FileMetadataProvider implements MetadataProvider {
         try {
             return Integer.parseInt(matcher.group(groupName));
         } catch (IllegalArgumentException e) {
-            throw new DataBridgeException(String.format("Malformed regex: %s tag is missing.", groupName));
+            throw new DataBridgeException(String.format("Malformed regex: %s tag is missing.", groupName), e);
         }
     }
 
