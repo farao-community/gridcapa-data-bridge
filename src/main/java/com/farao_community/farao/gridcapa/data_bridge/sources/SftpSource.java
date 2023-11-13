@@ -105,7 +105,7 @@ public class SftpSource {
     }
 
     @Bean
-    @InboundChannelAdapter(channel = "sftpSourceChannel", poller = @Poller(fixedDelay = "${data-bridge.sources.sftp.polling-delay-in-ms}"))
+    @InboundChannelAdapter(channel = "sftpSourceChannel", poller = @Poller(fixedDelay = "${data-bridge.sources.sftp.polling-delay-in-ms}", maxMessagesPerPoll = "${data-bridge.sources.sftp.max-messages-per-poll}"))
     public MessageSource<File> sftpMessageSource() throws IOException {
         SftpInboundFileSynchronizingMessageSource source = new SftpInboundFileSynchronizingMessageSource(sftpInboundFileSynchronizer());
         source.setLocalDirectory(Files.createTempDirectory(SYNCHRONIZE_TEMP_DIRECTORY_PREFIX).toFile());
