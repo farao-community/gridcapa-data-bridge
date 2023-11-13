@@ -84,7 +84,7 @@ jobs:
         with:
           type: now
           from_branch: next-release-v${{ github.event.inputs.nextVersion }}
-          target_branch: {{ github.ref_name }}
+          target_branch: ${{ github.ref_name }}
           message: Automatic merge after release ${{ github.event.inputs.releaseVersion }}
           github_token: ${{ secrets.REPO_ACCESS_TOKEN }}
 
