@@ -27,7 +27,7 @@
     <properties>
         <!-- Dependency versions -->
         <spring.integration.aws.version>2.4.0</spring.integration.aws.version>
-        <spring.integration.zip.version>1.0.3.RELEASE</spring.integration.zip.version>
+        <spring.integration.zip.version>1.0.4.RELEASE</spring.integration.zip.version>
         <gridcapa.starter.minio.adapter.version>1.1.0</gridcapa.starter.minio.adapter.version>
     </properties>
 
