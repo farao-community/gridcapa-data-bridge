@@ -15,7 +15,6 @@ import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.file.filters.CompositeFileListFilter;
 import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
 import org.springframework.integration.metadata.ConcurrentMetadataStore;
@@ -116,7 +115,7 @@ public class SftpSource {
 
     @Bean
     public IntegrationFlow sftpPreprocessFlow() {
-        return IntegrationFlows.from("sftpSourceChannel")
+        return IntegrationFlow.from("sftpSourceChannel")
                 .channel("archivesChannel")
                 .get();
     }

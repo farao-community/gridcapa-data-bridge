@@ -19,7 +19,6 @@ import org.springframework.integration.annotation.Poller;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.file.filters.CompositeFileListFilter;
 import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
 import org.springframework.integration.file.remote.session.SessionFactory;
@@ -130,7 +129,7 @@ public class FtpSource {
 
     @Bean
     public IntegrationFlow ftpPreprocessFlow() {
-        return IntegrationFlows.from("ftpSourceChannel")
+        return IntegrationFlow.from("ftpSourceChannel")
                 .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"ftp treatment of file \" + headers.file_name"))
                 .channel("archivesChannel")
                 .get();

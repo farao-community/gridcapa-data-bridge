@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.zip.splitter.UnZipResultSplitter;
 import org.springframework.integration.zip.transformer.UnZipTransformer;
@@ -48,7 +47,7 @@ public class FileTransferFlow {
 
     @Bean
     public IntegrationFlow unzipArchivesIntegrationFlow() {
-        return IntegrationFlows.from("archivesChannel")
+        return IntegrationFlow.from("archivesChannel")
                .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"Pre-treatment of file \" + headers.file_name"))
 
                 .<File, Boolean>route(file -> isZip(file) && doUnzip, m -> m
