@@ -7,7 +7,6 @@
 package com.farao_community.farao.gridcapa.data_bridge.sources;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.List;
  */
 @Component
 @ConfigurationProperties("data-bridge")
-@ConstructorBinding
 public class RemoteFileConfiguration {
     private final List<String> remoteFileRegex  = new ArrayList<>();
 
