@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.gridcapa.data_bridge.configuration.DataBridgeConfiguration;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapterConstants;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
@@ -26,10 +27,10 @@ public class FileMetadataProvider implements MetadataProvider {
     static final String GRIDCAPA_FILE_NAME_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY);
     static final String GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY);
 
-    private final FileMetadataConfiguration fileMetadataConfiguration;
+    private final DataBridgeConfiguration dataBridgeConfiguration;
 
-    public FileMetadataProvider(FileMetadataConfiguration fileMetadataConfiguration) {
-        this.fileMetadataConfiguration = fileMetadataConfiguration;
+    public FileMetadataProvider(DataBridgeConfiguration dataBridgeConfiguration) {
+        this.dataBridgeConfiguration = dataBridgeConfiguration;
     }
 
     private static String removeXAmzMetaPrefix(String metadataKey) {
@@ -40,8 +41,8 @@ public class FileMetadataProvider implements MetadataProvider {
     @Override
     public void populateMetadata(Message<?> message, Map<String, String> metadata) {
         metadata.put(GRIDCAPA_FILE_GROUP_METADATA_KEY, MinioAdapterConstants.DEFAULT_GRIDCAPA_INPUT_GROUP_METADATA_VALUE);
-        metadata.put(GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY, fileMetadataConfiguration.getTargetProcess());
-        metadata.put(GRIDCAPA_FILE_TYPE_METADATA_KEY, fileMetadataConfiguration.getFileType());
+        metadata.put(GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY, dataBridgeConfiguration.getTargetProcess());
+        metadata.put(GRIDCAPA_FILE_TYPE_METADATA_KEY, dataBridgeConfiguration.fileType());
         String fileName = message.getHeaders().get(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, String.class);
         metadata.put(GRIDCAPA_FILE_NAME_METADATA_KEY, fileName);
         String fileValidityInterval = getFileValidityIntervalMetadata(fileName);
@@ -52,9 +53,9 @@ public class FileMetadataProvider implements MetadataProvider {
         if (fileName == null || fileName.isEmpty()) {
             return "";
         }
-        Pattern pattern = Pattern.compile(fileMetadataConfiguration.getFileRegex());
+        Pattern pattern = Pattern.compile(dataBridgeConfiguration.fileRegex());
         Matcher matcher = pattern.matcher(fileName);
-        String timeValidity = fileMetadataConfiguration.getTimeValidity();
+        String timeValidity = dataBridgeConfiguration.timeValidity();
         if (matcher.matches()) {
             if (timeValidity.equalsIgnoreCase("hourly")) {
                 return getHourlyFileValidityIntervalMetadata(matcher);
@@ -100,7 +101,7 @@ public class FileMetadataProvider implements MetadataProvider {
     }
 
     private String toUtc(LocalDateTime localDateTime) {
-        return localDateTime.atZone(ZoneId.of(fileMetadataConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC).toString();
+        return localDateTime.atZone(ZoneId.of(dataBridgeConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC).toString();
     }
 
     private int parseOrThrow(Matcher matcher, String groupName) {

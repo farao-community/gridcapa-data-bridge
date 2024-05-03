@@ -1,7 +1,7 @@
 {
   "properties": [
     {
-      "name": "data-bridge.target-process",
+      "name": "data-bridge.configuration.target-process",
       "type": "java.lang.String",
       "description": "Target process."
     },

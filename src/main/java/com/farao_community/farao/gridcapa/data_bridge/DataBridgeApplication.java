@@ -6,9 +6,11 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.gridcapa.data_bridge.configuration.DataBridgeConfiguration;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapterAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
@@ -16,6 +18,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SuppressWarnings("hideutilityclassconstructor")
 @SpringBootApplication(exclude = MinioAdapterAutoConfiguration.class)
+@EnableConfigurationProperties({DataBridgeConfiguration.class})
 public class DataBridgeApplication {
     public static void main(String[] args) {
         SpringApplication.run(DataBridgeApplication.class, args);
