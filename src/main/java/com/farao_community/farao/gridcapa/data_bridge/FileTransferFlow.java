@@ -65,7 +65,6 @@ public class FileTransferFlow {
                         .subFlowMapping(true, flow -> flow
                                 .transform(new UnZipTransformer())
                                 .split(new UnZipResultSplitter())
-//                                .filter(Message.class, msg -> isFormatOk((String) msg.getHeaders().get("file_name")))
                                 .transform(Message.class, this::addFileNameHeader)
                                 .channel("filesChannel")
                         )
@@ -83,9 +82,4 @@ public class FileTransferFlow {
                 .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, filename)
                 .build();
     }
-
-//    private boolean isFormatOk(String filename) {
-//        return filename.matches(fileNameRegex);
-//    }
-
 }

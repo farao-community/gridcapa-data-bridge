@@ -27,6 +27,9 @@ public class FileMetadataProvider implements MetadataProvider {
     static final String GRIDCAPA_FILE_TYPE_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_TYPE_METADATA_KEY);
     static final String GRIDCAPA_FILE_NAME_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY);
     static final String GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY);
+    public static final String MONTH = "month";
+    public static final String YEAR = "year";
+    public static final String DAY = "day";
 
     private final DataBridgeConfiguration dataBridgeConfiguration;
 
@@ -74,18 +77,18 @@ public class FileMetadataProvider implements MetadataProvider {
     }
 
     private String getYearlyFileValidityIntervalMetadata(Matcher matcher) {
-        int year = parseOrThrow(matcher, "year");
-        int month = parseOrDefault(matcher, "month", 1);
-        int dayOfMonth = parseOrDefault(matcher, "day", 1);
+        int year = parseOrThrow(matcher, YEAR);
+        int month = parseOrDefault(matcher, MONTH, 1);
+        int dayOfMonth = parseOrDefault(matcher, DAY, 1);
         LocalDateTime beginDateTime = LocalDateTime.of(year, month, dayOfMonth, 0, 30);
         LocalDateTime endDateTime = beginDateTime.plusYears(1);
         return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
     }
 
     private String getHourlyFileValidityIntervalMetadata(Matcher matcher) {
-        int year = parseOrThrow(matcher, "year");
-        int month = parseOrThrow(matcher, "month");
-        int day = parseOrThrow(matcher, "day");
+        int year = parseOrThrow(matcher, YEAR);
+        int month = parseOrThrow(matcher, MONTH);
+        int day = parseOrThrow(matcher, DAY);
         int hour = parseOrThrow(matcher, "hour");
         int minute = parseOrThrow(matcher, "minute");
         LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
@@ -94,9 +97,9 @@ public class FileMetadataProvider implements MetadataProvider {
     }
 
     private String getDailyFileValidityIntervalMetadata(Matcher matcher) {
-        int year = parseOrThrow(matcher, "year");
-        int month = parseOrThrow(matcher, "month");
-        int day = parseOrThrow(matcher, "day");
+        int year = parseOrThrow(matcher, YEAR);
+        int month = parseOrThrow(matcher, MONTH);
+        int day = parseOrThrow(matcher, DAY);
         LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, 0, 30);
         LocalDateTime endDateTime = beginDateTime.plusDays(1);
         return toUtc(beginDateTime) + "/" + toUtc(endDateTime);

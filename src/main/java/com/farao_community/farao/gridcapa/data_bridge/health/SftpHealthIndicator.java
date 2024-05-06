@@ -7,7 +7,6 @@
 package com.farao_community.farao.gridcapa.data_bridge.health;
 
 import com.farao_community.farao.gridcapa.data_bridge.configuration.SftpConfiguration;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,6 +28,7 @@ public class SftpHealthIndicator implements HealthIndicator {
         this.sftpSessionFactory = sftpSessionFactory;
         this.sftpConfiguration = sftpConfiguration;
     }
+
     @Override
     public Health health() {
         sftpSessionFactory.setAllowUnknownKeys(true);
