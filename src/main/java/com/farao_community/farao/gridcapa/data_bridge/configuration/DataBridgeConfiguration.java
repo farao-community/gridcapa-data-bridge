@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge.configuration;
 
+import com.farao_community.farao.gridcapa.data_bridge.DataBridgeException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
@@ -38,4 +39,10 @@ public class DataBridgeConfiguration {
         return files;
     }
 
+    public FileMetadataConfiguration getFileConfiguration(String fileName) {
+        return files.stream()
+                .filter(f -> fileName.matches(f.fileRegex()))
+                .findFirst()
+                .orElseThrow(() -> new DataBridgeException(String.format("Unhandled fileName: %s.", fileName)));
+    }
 }

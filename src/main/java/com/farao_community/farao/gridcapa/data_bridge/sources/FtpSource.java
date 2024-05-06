@@ -6,9 +6,9 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge.sources;
 
+import com.farao_community.farao.gridcapa.data_bridge.configuration.FtpConfiguration;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +23,6 @@ import org.springframework.integration.file.filters.CompositeFileListFilter;
 import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.ftp.filters.FtpPersistentAcceptOnceFileListFilter;
-import org.springframework.integration.ftp.filters.FtpRegexPatternFileListFilter;
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizer;
 import org.springframework.integration.ftp.inbound.FtpInboundFileSynchronizingMessageSource;
 import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
@@ -49,26 +48,12 @@ public class FtpSource {
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
 
     private final ApplicationContext applicationContext;
-    private final RemoteFileConfiguration remoteFileConfiguration;
 
-    @Value("${data-bridge.sources.ftp.host}")
-    private String ftpHost;
-    @Value("${data-bridge.sources.ftp.port}")
-    private int ftpPort;
-    @Value("${data-bridge.sources.ftp.username}")
-    private String ftpUsername;
-    @Value("${data-bridge.sources.ftp.password}")
-    private String ftpPassword;
-    @Value("${data-bridge.sources.ftp.base-directory}")
-    private String ftpBaseDirectory;
-    @Value("${data-bridge.sources.ftp.file-list-persistence-file:/tmp/gridcapa/ftp-metadata-store.properties}")
-    private String fileListPersistenceFile;
-    @Value("${data-bridge.sources.ftp.data-timeout:60000}")
-    private int ftpDataTimeout;
+    private final FtpConfiguration ftpConfiguration;
 
-    public FtpSource(ApplicationContext applicationContext, RemoteFileConfiguration remoteFileConfiguration) {
+    public FtpSource(ApplicationContext applicationContext, FtpConfiguration ftpConfiguration) {
         this.applicationContext = applicationContext;
-        this.remoteFileConfiguration = remoteFileConfiguration;
+        this.ftpConfiguration = ftpConfiguration;
     }
 
     @Bean
@@ -76,19 +61,20 @@ public class FtpSource {
         return new PublishSubscribeChannel();
     }
 
-    private SessionFactory<FTPFile> ftpSessionFactory() {
+    @Bean
+    public SessionFactory<FTPFile> ftpSessionFactory() {
         DefaultFtpSessionFactory ftpSessionFactory = new DefaultFtpSessionFactory();
-        ftpSessionFactory.setHost(ftpHost);
-        ftpSessionFactory.setPort(ftpPort);
-        ftpSessionFactory.setUsername(ftpUsername);
-        ftpSessionFactory.setPassword(ftpPassword);
+        ftpSessionFactory.setHost(ftpConfiguration.getHost());
+        ftpSessionFactory.setPort(ftpConfiguration.getPort());
+        ftpSessionFactory.setUsername(ftpConfiguration.getUsername());
+        ftpSessionFactory.setPassword(ftpConfiguration.getPassword());
         ftpSessionFactory.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
-        ftpSessionFactory.setDataTimeout(ftpDataTimeout);
+        ftpSessionFactory.setDataTimeout(ftpConfiguration.getDataTimeout());
         return ftpSessionFactory;
     }
 
     private ConcurrentMetadataStore createMetadataStoreForFilePersistence() {
-        Path persistenceFilePath = Path.of(fileListPersistenceFile);
+        Path persistenceFilePath = Path.of(ftpConfiguration.getFileListPersistenceFile());
         PropertiesPersistingMetadataStore filePersistenceMetadataStore = new PropertiesPersistingMetadataStore();
         filePersistenceMetadataStore.setBaseDirectory(persistenceFilePath.getParent().toString());
         filePersistenceMetadataStore.setFileName(persistenceFilePath.getFileName().toString());
@@ -107,16 +93,16 @@ public class FtpSource {
         FtpInboundFileSynchronizer fileSynchronizer = new FtpInboundFileSynchronizer(ftpSessionFactory());
         fileSynchronizer.setDeleteRemoteFiles(false);
         fileSynchronizer.setBeanFactory(applicationContext);
-        fileSynchronizer.setRemoteDirectory(ftpBaseDirectory);
+        fileSynchronizer.setRemoteDirectory(ftpConfiguration.getBaseDirectory());//TODO
         fileSynchronizer.setPreserveTimestamp(true);
         CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
-        fileListFilter.addFilter(new FtpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
-        fileListFilter.addFilter(new TimestampWithinADayFtpFileFilter());
+ //TODO       fileListFilter.addFilter(new FtpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
         fileListFilter.addFilter(createFilePersistenceFilter());
         fileSynchronizer.setFilter(fileListFilter);
         return fileSynchronizer;
     }
 
+    //
     @Bean
     @InboundChannelAdapter(channel = "ftpSourceChannel", poller = @Poller(fixedDelay = "${data-bridge.sources.ftp.polling-delay-in-ms}", maxMessagesPerPoll = "${data-bridge.sources.ftp.max-messages-per-poll}"))
     public MessageSource<File> ftpMessageSource() throws IOException {

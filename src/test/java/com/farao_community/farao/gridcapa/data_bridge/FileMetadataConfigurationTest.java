@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.gridcapa.data_bridge.configuration.DataBridgeConfiguration;
 import com.farao_community.farao.gridcapa.data_bridge.configuration.FileMetadataConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +21,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class FileMetadataConfigurationTest {
 
     @Autowired
-    private FileMetadataConfiguration fileMetadataConfiguration;
+    private DataBridgeConfiguration dataBridgeConfiguration;
 
     @Test
     void testDefaultConfig() {
-        assertEquals("CGM", fileMetadataConfiguration.fileType());
-        assertEquals("regex_test", fileMetadataConfiguration.fileRegex());
-        assertEquals("CSE_D2CC", fileMetadataConfiguration.getTargetProcess());
-        assertEquals("hourly", fileMetadataConfiguration.timeValidity());
+        assertEquals("CSE_D2CC", dataBridgeConfiguration.getTargetProcess());
+        FileMetadataConfiguration file0 = dataBridgeConfiguration.getFiles().get(0);
+        assertEquals("CGM", file0.fileType());
+        assertEquals("regex_test", file0.fileRegex());
+        assertEquals("hourly", file0.timeValidity());
     }
 }

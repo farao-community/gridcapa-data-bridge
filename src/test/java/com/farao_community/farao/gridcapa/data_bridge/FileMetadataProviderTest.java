@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.gridcapa.data_bridge.configuration.DataBridgeConfiguration;
 import com.farao_community.farao.gridcapa.data_bridge.configuration.FileMetadataConfiguration;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapterConstants;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,14 +34,17 @@ class FileMetadataProviderTest {
     private FileMetadataProvider fileMetadataProvider;
 
     @MockBean
+    private DataBridgeConfiguration dataBridgeConfiguration;
+    @MockBean
     private FileMetadataConfiguration fileMetadataConfiguration;
 
     private void mockConfig(String targetProcess, String fileType, String timeValidity, String fileRegex, String zoneId) {
-        Mockito.when(fileMetadataConfiguration.getTargetProcess()).thenReturn(targetProcess);
+        Mockito.when(dataBridgeConfiguration.getFiles()).thenReturn(List.of(fileMetadataConfiguration));
+        Mockito.when(dataBridgeConfiguration.getTargetProcess()).thenReturn(targetProcess);
         Mockito.when(fileMetadataConfiguration.timeValidity()).thenReturn(timeValidity);
         Mockito.when(fileMetadataConfiguration.fileType()).thenReturn(fileType);
         Mockito.when(fileMetadataConfiguration.fileRegex()).thenReturn(fileRegex);
-        Mockito.when(fileMetadataConfiguration.getZoneId()).thenReturn(zoneId);
+        Mockito.when(dataBridgeConfiguration.getZoneId()).thenReturn(zoneId);
     }
 
     @Test

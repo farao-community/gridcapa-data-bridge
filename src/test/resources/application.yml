@@ -1,13 +1,21 @@
 data-bridge:
   zone-id: "Europe/Paris"
   target-process: CSE_D2CC
-  file-type: CGM
-  file-regex: regex_test
-  time-validity: hourly
-  remote-file-regex:
-    - ".*.zip"
-    - "[0-9]{8}_[0-9]{4}_.*.(uct|UCT)"
-  do-unzip: true
+  files:
+    - file-type: CGM
+      file-regex: regex_test
+      time-validity: hourly
+      remote-file-regex: ".*.zip|[0-9]{8}_[0-9]{4}_.*.(uct|UCT)"
+      do-unzip: true
+      source-directory: "cgms"
+      sink-directory: "CGMs"
+    - file-type: CRAC
+      file-regex: regex_test
+      time-validity: hourly
+      remote-file-regex: ".*Transit.*.zip|[0-9]{8}_[0-9]{4}_.*Transit.*.(xml|XML)"
+      do-unzip: true
+      source-directory: "cracs"
+      sink-directory: "CRACs"
   sources:
     ftp:
       active: true

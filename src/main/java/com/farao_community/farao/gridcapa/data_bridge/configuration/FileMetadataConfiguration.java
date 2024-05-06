@@ -9,6 +9,54 @@ package com.farao_community.farao.gridcapa.data_bridge.configuration;
 /**
  * @author Marc Schwitzguebel {@literal <marc.schwitzguebel  at rte-france.com>}
  */
-public record FileMetadataConfiguration(String fileType, String fileRegex, String timeValidity, String remoteFileRegex,
-                                        boolean doUnzip, String sourceDirectory, String sinkDirectory) {
+public final class FileMetadataConfiguration {
+    private final String fileType;
+    private final String fileRegex;
+    private final String timeValidity;
+    private final String remoteFileRegex;
+    private boolean doUnzip = true;
+    private final String sourceDirectory;
+    private final String sinkDirectory;
+
+    /**
+     *
+     */
+    public FileMetadataConfiguration(String fileType, String fileRegex, String timeValidity, String remoteFileRegex,
+                                     boolean doUnzip, String sourceDirectory, String sinkDirectory) {
+        this.fileType = fileType;
+        this.fileRegex = fileRegex;
+        this.timeValidity = timeValidity;
+        this.remoteFileRegex = remoteFileRegex;
+        this.doUnzip = doUnzip;
+        this.sourceDirectory = sourceDirectory;
+        this.sinkDirectory = sinkDirectory;
+    }
+
+    public String fileType() {
+        return fileType;
+    }
+
+    public String fileRegex() {
+        return fileRegex;
+    }
+
+    public String timeValidity() {
+        return timeValidity;
+    }
+
+    public String remoteFileRegex() {
+        return remoteFileRegex;
+    }
+
+    public boolean doUnzip() {
+        return doUnzip;
+    }
+
+    public String sourceDirectory() {
+        return sourceDirectory;
+    }
+
+    public String sinkDirectory() {
+        return sinkDirectory;
+    }
 }

@@ -6,6 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.gridcapa.data_bridge.utils.ZipFileDetector;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
