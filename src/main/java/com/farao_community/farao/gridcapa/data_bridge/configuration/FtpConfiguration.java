@@ -21,16 +21,20 @@ public class FtpConfiguration {
     private final String username;
     private final String password;
     private final String baseDirectory;
+    private final int pollingDelayInMs;
     private final String fileListPersistenceFile;
+    private final int maxMessagesPerPoll;
     private final int dataTimeout;
 
-    public FtpConfiguration(String host, int port, String username, String password, String baseDirectory, String fileListPersistenceFile, int dataTimeout) {
+    public FtpConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, String fileListPersistenceFile, int maxMessagesPerPoll, int dataTimeout) {
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
         this.baseDirectory = baseDirectory;
+        this.pollingDelayInMs = pollingDelayInMs;
         this.fileListPersistenceFile = fileListPersistenceFile;
+        this.maxMessagesPerPoll = maxMessagesPerPoll;
         this.dataTimeout = dataTimeout;
     }
 
@@ -54,12 +58,19 @@ public class FtpConfiguration {
         return baseDirectory;
     }
 
+    public int getPollingDelayInMs() {
+        return pollingDelayInMs;
+    }
+
     public String getFileListPersistenceFile() {
         return fileListPersistenceFile;
+    }
+
+    public int getMaxMessagesPerPoll() {
+        return maxMessagesPerPoll;
     }
 
     public int getDataTimeout() {
         return dataTimeout;
     }
-
 }

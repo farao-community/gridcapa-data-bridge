@@ -29,6 +29,16 @@ class FileMetadataConfigurationTest {
         FileMetadataConfiguration file0 = dataBridgeConfiguration.getFiles().get(0);
         assertEquals("CGM", file0.fileType());
         assertEquals("regex_test", file0.fileRegex());
-        assertEquals("hourly", file0.timeValidity());
+        assertEquals(".*.zip|[0-9]{8}_[0-9]{4}_.*.(uct|UCT)", file0.remoteFileRegex());
+        assertTrue(file0.doUnzip());
+        assertEquals("cgms", file0.sourceDirectory());
+        assertEquals("CGMs", file0.sinkDirectory());
+        FileMetadataConfiguration file1 = dataBridgeConfiguration.getFiles().get(1);
+        assertEquals("CRAC", file1.fileType());
+        assertEquals("regex_test", file1.fileRegex());
+        assertEquals(".*Transit.*.zip|[0-9]{8}_[0-9]{4}_.*Transit.*.(xml|XML)", file1.remoteFileRegex());
+        assertTrue(file1.doUnzip());
+        assertEquals("cracs", file1.sourceDirectory());
+        assertEquals("CRACs", file1.sinkDirectory());
     }
 }

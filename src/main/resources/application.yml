@@ -19,7 +19,7 @@ data-bridge:
         sink-directory: "/CRACs"
   sources:
     ftp:
-      active: ${SOURCE_FTP_ACTIVE:false}
+      active: ${SOURCE_FTP_ACTIVE:true}
       host: ${SOURCE_FTP_HOST:localhost}
       port: ${SOURCE_FTP_PORT:21}
       username: ${SOURCE_FTP_USERNAME:gridcapa}

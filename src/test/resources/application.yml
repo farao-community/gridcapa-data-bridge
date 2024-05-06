@@ -1,21 +1,21 @@
 data-bridge:
-  zone-id: "Europe/Paris"
-  target-process: CSE_D2CC
-  files:
-    - file-type: CGM
-      file-regex: regex_test
-      time-validity: hourly
-      remote-file-regex: ".*.zip|[0-9]{8}_[0-9]{4}_.*.(uct|UCT)"
-      do-unzip: true
-      source-directory: "cgms"
-      sink-directory: "CGMs"
-    - file-type: CRAC
-      file-regex: regex_test
-      time-validity: hourly
-      remote-file-regex: ".*Transit.*.zip|[0-9]{8}_[0-9]{4}_.*Transit.*.(xml|XML)"
-      do-unzip: true
-      source-directory: "cracs"
-      sink-directory: "CRACs"
+  configuration:
+    zone-id: "Europe/Paris"
+    target-process: CSE_D2CC
+    files:
+      - file-type: CGM
+        file-regex: regex_test
+        time-validity: hourly
+        remote-file-regex: ".*.zip|[0-9]{8}_[0-9]{4}_.*.(uct|UCT)"
+        do-unzip: true
+        source-directory: "cgms"
+        sink-directory: "CGMs"
+      - file-type: CRAC
+        file-regex: regex_test
+        time-validity: hourly
+        remote-file-regex: ".*Transit.*.zip|[0-9]{8}_[0-9]{4}_.*Transit.*.(xml|XML)"
+        source-directory: "cracs"
+        sink-directory: "CRACs"
   sources:
     ftp:
       active: true
@@ -25,6 +25,7 @@ data-bridge:
       password: gridcapa
       base-directory: /data/gridcapa/cse/d2cc/cgms
       polling-delay-in-ms: 5000
+      file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       max-messages-per-poll: 10
     sftp:
       active: true
@@ -34,6 +35,7 @@ data-bridge:
       password: gridcapa
       base-directory: /data/gridcapa/cse/d2cc/cgms
       polling-delay-in-ms: 5000
+      file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       max-messages-per-poll: 10
   sinks:
     minio:

@@ -14,7 +14,7 @@ public final class FileMetadataConfiguration {
     private final String fileRegex;
     private final String timeValidity;
     private final String remoteFileRegex;
-    private boolean doUnzip = true;
+    private final boolean doUnzip;
     private final String sourceDirectory;
     private final String sinkDirectory;
 
@@ -22,12 +22,12 @@ public final class FileMetadataConfiguration {
      *
      */
     public FileMetadataConfiguration(String fileType, String fileRegex, String timeValidity, String remoteFileRegex,
-                                     boolean doUnzip, String sourceDirectory, String sinkDirectory) {
+                                     Boolean doUnzip, String sourceDirectory, String sinkDirectory) {
         this.fileType = fileType;
         this.fileRegex = fileRegex;
         this.timeValidity = timeValidity;
         this.remoteFileRegex = remoteFileRegex;
-        this.doUnzip = doUnzip;
+        this.doUnzip = doUnzip != null ? doUnzip : true;
         this.sourceDirectory = sourceDirectory;
         this.sinkDirectory = sinkDirectory;
     }
