@@ -23,7 +23,7 @@ data-bridge:
       port: 21
       username: gridcapa
       password: gridcapa
-      base-directory: /data/gridcapa/cse/d2cc/cgms
+      base-directory: /data/gridcapa/cse/d2cc/
       polling-delay-in-ms: 5000
       file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       max-messages-per-poll: 10
@@ -33,7 +33,7 @@ data-bridge:
       port: 2222
       username: gridcapa
       password: gridcapa
-      base-directory: /data/gridcapa/cse/d2cc/cgms
+      base-directory: /data/gridcapa/cse/d2cc/
       polling-delay-in-ms: 5000
       file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       max-messages-per-poll: 10

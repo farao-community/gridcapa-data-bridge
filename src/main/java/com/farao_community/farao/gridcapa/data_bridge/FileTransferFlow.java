@@ -54,8 +54,7 @@ public class FileTransferFlow {
                .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"Pre-treatment of file \" + headers.file_name"))
 
                 .<File, Boolean>route(file -> {
-                        String fileName = PARSER.parseExpression("headers.file_name").getValue(String.class);
-                        final FileMetadataConfiguration fileMetadataConfiguration = dataBridgeConfiguration.getFileConfiguration(fileName);
+                        final FileMetadataConfiguration fileMetadataConfiguration = dataBridgeConfiguration.getFileConfigurationFromRemoteName(file.getName());
                         return isZip(file) && fileMetadataConfiguration.doUnzip();
                        }, m -> m
                         .subFlowMapping(false, flow -> flow
@@ -78,8 +77,10 @@ public class FileTransferFlow {
 
     private Message<File> addFileNameHeader(Message<File> message) {
         String filename = (String) message.getHeaders().get("file_name");
+        String fileSinkDirectory = dataBridgeConfiguration.getFileConfigurationFromName(filename).sinkDirectory();
         return MessageBuilder.fromMessage(message)
                 .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, filename)
+                .setHeader("file_sink", fileSinkDirectory)
                 .build();
     }
 }

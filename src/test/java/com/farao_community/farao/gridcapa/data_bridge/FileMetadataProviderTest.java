@@ -45,7 +45,7 @@ class FileMetadataProviderTest {
         Mockito.when(fileMetadataConfiguration.fileType()).thenReturn(fileType);
         Mockito.when(fileMetadataConfiguration.fileRegex()).thenReturn(fileRegex);
         Mockito.when(dataBridgeConfiguration.getZoneId()).thenReturn(zoneId);
-        Mockito.when(dataBridgeConfiguration.getFileConfiguration(Mockito.anyString())).thenReturn(fileMetadataConfiguration);
+        Mockito.when(dataBridgeConfiguration.getFileConfigurationFromName(Mockito.anyString())).thenReturn(fileMetadataConfiguration);
     }
 
     @Test

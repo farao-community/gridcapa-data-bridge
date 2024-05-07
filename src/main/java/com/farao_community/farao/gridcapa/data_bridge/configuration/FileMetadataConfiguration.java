@@ -18,9 +18,6 @@ public final class FileMetadataConfiguration {
     private final String sourceDirectory;
     private final String sinkDirectory;
 
-    /**
-     *
-     */
     public FileMetadataConfiguration(String fileType, String fileRegex, String timeValidity, String remoteFileRegex,
                                      Boolean doUnzip, String sourceDirectory, String sinkDirectory) {
         this.fileType = fileType;

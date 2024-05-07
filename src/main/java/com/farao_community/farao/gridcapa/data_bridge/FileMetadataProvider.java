@@ -45,7 +45,7 @@ public class FileMetadataProvider implements MetadataProvider {
     @Override
     public void populateMetadata(Message<?> message, Map<String, String> metadata) {
         final String fileName = message.getHeaders().get(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, String.class);
-        final FileMetadataConfiguration fileMetadataConfiguration = dataBridgeConfiguration.getFileConfiguration(fileName);
+        final FileMetadataConfiguration fileMetadataConfiguration = dataBridgeConfiguration.getFileConfigurationFromName(fileName);
         metadata.put(GRIDCAPA_FILE_GROUP_METADATA_KEY, MinioAdapterConstants.DEFAULT_GRIDCAPA_INPUT_GROUP_METADATA_VALUE);
         metadata.put(GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY, dataBridgeConfiguration.getTargetProcess());
         metadata.put(GRIDCAPA_FILE_TYPE_METADATA_KEY, fileMetadataConfiguration.fileType());

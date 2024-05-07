@@ -39,10 +39,17 @@ public class DataBridgeConfiguration {
         return files;
     }
 
-    public FileMetadataConfiguration getFileConfiguration(String fileName) {
+    public FileMetadataConfiguration getFileConfigurationFromName(String fileName) {
         return files.stream()
                 .filter(f -> fileName.matches(f.fileRegex()))
                 .findFirst()
                 .orElseThrow(() -> new DataBridgeException(String.format("Unhandled fileName: %s.", fileName)));
+    }
+
+    public FileMetadataConfiguration getFileConfigurationFromRemoteName(String remoteName) {
+        return files.stream()
+                .filter(f -> remoteName.matches(f.remoteFileRegex()))
+                .findFirst()
+                .orElseThrow(() -> new DataBridgeException(String.format("Unhandled remote fileName: %s.", remoteName)));
     }
 }

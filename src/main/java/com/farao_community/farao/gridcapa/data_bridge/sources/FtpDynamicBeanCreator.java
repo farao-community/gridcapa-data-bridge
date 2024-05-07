@@ -54,6 +54,7 @@ public class FtpDynamicBeanCreator implements BeanDefinitionRegistryPostProcesso
                 .orElseThrow(() -> new DataBridgeException("Unable to create dataBridgeConfiguration: missing config"));
         fileMetadataConfigurations = dataBridgeConfiguration.getFiles();
         this.ftpSessionFactory = ftpSessionFactory;
+
     }
 
     @Override
