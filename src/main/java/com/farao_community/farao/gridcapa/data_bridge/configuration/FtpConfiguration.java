@@ -14,60 +14,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "data-bridge.sources.ftp")
 @ConditionalOnProperty(prefix = "data-bridge.sources.ftp", name = "active", havingValue = "true")
-public class FtpConfiguration {
+public class FtpConfiguration extends SourceConfiguration {
 
-    private final String host;
-    private final int port;
-    private final String username;
-    private final String password;
-    private final String baseDirectory;
-    private final int pollingDelayInMs;
-    private final String fileListPersistenceFile;
-    private final int maxMessagesPerPoll;
     private final int dataTimeout;
 
     public FtpConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, String fileListPersistenceFile, int maxMessagesPerPoll, int dataTimeout) {
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.password = password;
-        this.baseDirectory = baseDirectory;
-        this.pollingDelayInMs = pollingDelayInMs;
-        this.fileListPersistenceFile = fileListPersistenceFile;
-        this.maxMessagesPerPoll = maxMessagesPerPoll;
+        super(host, port, username, password, baseDirectory, pollingDelayInMs, fileListPersistenceFile, maxMessagesPerPoll);
         this.dataTimeout = dataTimeout;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getBaseDirectory() {
-        return baseDirectory;
-    }
-
-    public int getPollingDelayInMs() {
-        return pollingDelayInMs;
-    }
-
-    public String getFileListPersistenceFile() {
-        return fileListPersistenceFile;
-    }
-
-    public int getMaxMessagesPerPoll() {
-        return maxMessagesPerPoll;
     }
 
     public int getDataTimeout() {

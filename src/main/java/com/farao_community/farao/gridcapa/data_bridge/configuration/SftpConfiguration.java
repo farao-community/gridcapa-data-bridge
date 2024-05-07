@@ -14,57 +14,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "data-bridge.sources.sftp")
 @ConditionalOnProperty(prefix = "data-bridge.sources.sftp", name = "active", havingValue = "true")
-public class SftpConfiguration {
-
-    private final String host;
-    private final int port;
-    private final String username;
-    private final String password;
-    private final String baseDirectory;
-    private final int pollingDelayInMs;
-    private final String fileListPersistenceFile;
-    private final int maxMessagesPerPoll;
+public class SftpConfiguration extends SourceConfiguration {
 
     public SftpConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, String fileListPersistenceFile, int maxMessagesPerPoll) {
-        this.host = host;
-        this.port = port;
-        this.username = username;
-        this.password = password;
-        this.baseDirectory = baseDirectory;
-        this.pollingDelayInMs = pollingDelayInMs;
-        this.fileListPersistenceFile = fileListPersistenceFile;
-        this.maxMessagesPerPoll = maxMessagesPerPoll;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getBaseDirectory() {
-        return baseDirectory;
-    }
-
-    public int getPollingDelayInMs() {
-        return pollingDelayInMs;
-    }
-
-    public String getFileListPersistenceFile() {
-        return fileListPersistenceFile;
-    }
-
-    public int getMaxMessagesPerPoll() {
-        return maxMessagesPerPoll;
+        super(host, port, username, password, baseDirectory, pollingDelayInMs, fileListPersistenceFile, maxMessagesPerPoll);
     }
 }
