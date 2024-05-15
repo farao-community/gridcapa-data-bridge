@@ -7,11 +7,12 @@
 package com.farao_community.farao.gridcapa.data_bridge.health;
 
 import com.farao_community.farao.gridcapa.data_bridge.configuration.SftpConfiguration;
+import org.apache.sshd.sftp.client.SftpClient;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
-import org.springframework.integration.sftp.session.SftpSession;
+import org.springframework.integration.file.remote.session.Session;
+import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,18 +22,17 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(prefix = "data-bridge.sources.sftp", name = "active", havingValue = "true")
 public class SftpHealthIndicator implements HealthIndicator {
 
-    private final DefaultSftpSessionFactory sftpSessionFactory;
+    private final SessionFactory<SftpClient.DirEntry> sftpSessionFactory;
     private final SftpConfiguration sftpConfiguration;
 
-    public SftpHealthIndicator(DefaultSftpSessionFactory sftpSessionFactory, SftpConfiguration sftpConfiguration) {
+    public SftpHealthIndicator(SessionFactory<SftpClient.DirEntry> sftpSessionFactory, SftpConfiguration sftpConfiguration) {
         this.sftpSessionFactory = sftpSessionFactory;
         this.sftpConfiguration = sftpConfiguration;
     }
 
     @Override
     public Health health() {
-        sftpSessionFactory.setAllowUnknownKeys(true);
-        try (SftpSession session = sftpSessionFactory.getSession()) {
+        try (Session<SftpClient.DirEntry> session = sftpSessionFactory.getSession()) {
             if (session.test() && session.exists(sftpConfiguration.getBaseDirectory())) {
                 return Health.up().build();
             }

@@ -16,6 +16,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.integration.file.remote.session.CachingSessionFactory;
 import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
 
@@ -27,7 +28,7 @@ import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
 public class FtpSource {
 
     @Bean
-    public DefaultFtpSessionFactory ftpSessionFactory(ConfigurableEnvironment environment) {
+    public SessionFactory<FTPFile> ftpSessionFactory(ConfigurableEnvironment environment) {
         FtpConfiguration ftpConfiguration = Binder.get(environment)
                 .bind("data-bridge.sources.ftp", Bindable.of(FtpConfiguration.class))
                 .orElseThrow(() -> new DataBridgeException("Unable to create ftpSessionFactory: missing ftp config"));
@@ -38,7 +39,7 @@ public class FtpSource {
         ftpSessionFactory.setPassword(ftpConfiguration.getPassword());
         ftpSessionFactory.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
         ftpSessionFactory.setDataTimeout(ftpConfiguration.getDataTimeout());
-        return ftpSessionFactory;
+        return new CachingSessionFactory<>(ftpSessionFactory, ftpConfiguration.getMaxPoolSize());
     }
 
     @Bean

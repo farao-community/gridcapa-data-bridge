@@ -8,12 +8,15 @@ package com.farao_community.farao.gridcapa.data_bridge.sources;
 
 import com.farao_community.farao.gridcapa.data_bridge.DataBridgeException;
 import com.farao_community.farao.gridcapa.data_bridge.configuration.SftpConfiguration;
+import org.apache.sshd.sftp.client.SftpClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.integration.file.remote.session.CachingSessionFactory;
+import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
 
 /**
@@ -24,7 +27,7 @@ import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
 public class SftpSource {
 
     @Bean
-    public DefaultSftpSessionFactory sftpSessionFactory(ConfigurableEnvironment environment) {
+    public SessionFactory<SftpClient.DirEntry> sftpSessionFactory(ConfigurableEnvironment environment) {
         SftpConfiguration sftpConfiguration = Binder.get(environment)
                 .bind("data-bridge.sources.sftp", Bindable.of(SftpConfiguration.class))
                 .orElseThrow(() -> new DataBridgeException("Unable to create sftpSessionFactory: missing sftp config"));
@@ -34,11 +37,11 @@ public class SftpSource {
         factory.setUser(sftpConfiguration.getUsername());
         factory.setPassword(sftpConfiguration.getPassword());
         factory.setAllowUnknownKeys(true);
-        return factory;
+        return new CachingSessionFactory<>(factory, sftpConfiguration.getMaxPoolSize());
     }
 
     @Bean
-    public SftpDynamicBeanCreator createSftpBeans(DefaultSftpSessionFactory sftpSessionFactory, ConfigurableEnvironment environment) {
+    public SftpDynamicBeanCreator createSftpBeans(SessionFactory<SftpClient.DirEntry> sftpSessionFactory, ConfigurableEnvironment environment) {
         return new SftpDynamicBeanCreator(sftpSessionFactory, environment);
     }
 }

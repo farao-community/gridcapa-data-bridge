@@ -11,6 +11,7 @@ import com.farao_community.farao.gridcapa.data_bridge.configuration.DataBridgeCo
 import com.farao_community.farao.gridcapa.data_bridge.configuration.FileMetadataConfiguration;
 import com.farao_community.farao.gridcapa.data_bridge.configuration.SftpConfiguration;
 import com.farao_community.farao.gridcapa.data_bridge.utils.SftpInboundFileFilter;
+import org.apache.sshd.sftp.client.SftpClient;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -23,10 +24,10 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.file.filters.FileSystemPersistentAcceptOnceFileListFilter;
+import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.metadata.SimpleMetadataStore;
 import org.springframework.integration.sftp.dsl.Sftp;
-import org.springframework.integration.sftp.session.DefaultSftpSessionFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,9 +43,9 @@ public class SftpDynamicBeanCreator implements BeanDefinitionRegistryPostProcess
 
     private final List<FileMetadataConfiguration> fileMetadataConfigurations;
     private final SftpConfiguration sftpConfiguration;
-    private final DefaultSftpSessionFactory sftpSessionFactory;
+    private final SessionFactory<SftpClient.DirEntry> sftpSessionFactory;
 
-    public SftpDynamicBeanCreator(DefaultSftpSessionFactory sftpSessionFactory, ConfigurableEnvironment environment) {
+    public SftpDynamicBeanCreator(SessionFactory<SftpClient.DirEntry> sftpSessionFactory, ConfigurableEnvironment environment) {
         this.sftpConfiguration = Binder.get(environment)
                 .bind("data-bridge.sources.sftp", Bindable.of(SftpConfiguration.class))
                 .orElseThrow(() -> new DataBridgeException("Unable to create sftpSessionFactory: missing sftp config"));
@@ -77,7 +78,7 @@ public class SftpDynamicBeanCreator implements BeanDefinitionRegistryPostProcess
         /*unused*/
     }
 
-    private IntegrationFlow sftpInboundFlow(DefaultSftpSessionFactory sftpSessionFactory, FileMetadataConfiguration fileMetadataConfiguration)  throws IOException {
+    private IntegrationFlow sftpInboundFlow(SessionFactory<SftpClient.DirEntry> sftpSessionFactory, FileMetadataConfiguration fileMetadataConfiguration)  throws IOException {
         return IntegrationFlow
                 .from(Sftp.inboundAdapter(sftpSessionFactory)
                                 .deleteRemoteFiles(false)

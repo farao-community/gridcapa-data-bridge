@@ -7,11 +7,12 @@
 package com.farao_community.farao.gridcapa.data_bridge.health;
 
 import com.farao_community.farao.gridcapa.data_bridge.configuration.FtpConfiguration;
+import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.integration.ftp.session.DefaultFtpSessionFactory;
-import org.springframework.integration.ftp.session.FtpSession;
+import org.springframework.integration.file.remote.session.Session;
+import org.springframework.integration.file.remote.session.SessionFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -24,16 +25,16 @@ import java.io.IOException;
 public class FtpHealthIndicator implements HealthIndicator {
 
     private final FtpConfiguration ftpConfiguration;
-    private final DefaultFtpSessionFactory ftpSessionFactory;
+    private final SessionFactory<FTPFile> ftpSessionFactory;
 
-    public FtpHealthIndicator(DefaultFtpSessionFactory ftpSessionFactory, FtpConfiguration ftpConfiguration) {
+    public FtpHealthIndicator(SessionFactory<FTPFile> ftpSessionFactory, FtpConfiguration ftpConfiguration) {
         this.ftpSessionFactory = ftpSessionFactory;
         this.ftpConfiguration = ftpConfiguration;
     }
 
     @Override
     public Health health() {
-        try (FtpSession session = ftpSessionFactory.getSession()) {
+        try (Session<FTPFile> session = ftpSessionFactory.getSession()) {
             if (session.test() && session.exists(ftpConfiguration.getBaseDirectory())) {
                 return Health.up().build();
             }

@@ -19,8 +19,9 @@ public class SourceConfiguration {
     protected final int pollingDelayInMs;
     protected final String fileListPersistenceFile;
     protected final int maxMessagesPerPoll;
+    protected final int maxPoolSize;
 
-    public SourceConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, String fileListPersistenceFile, int maxMessagesPerPoll) {
+    public SourceConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, String fileListPersistenceFile, int maxMessagesPerPoll, int maxPoolSize) {
         this.host = host;
         this.port = port;
         this.username = username;
@@ -29,6 +30,7 @@ public class SourceConfiguration {
         this.pollingDelayInMs = pollingDelayInMs;
         this.fileListPersistenceFile = fileListPersistenceFile;
         this.maxMessagesPerPoll = maxMessagesPerPoll;
+        this.maxPoolSize = maxPoolSize;
     }
 
     public String getHost() {
@@ -61,5 +63,9 @@ public class SourceConfiguration {
 
     public int getMaxMessagesPerPoll() {
         return maxMessagesPerPoll;
+    }
+
+    public int getMaxPoolSize() {
+        return maxPoolSize;
     }
 }

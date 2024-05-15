@@ -27,6 +27,7 @@ data-bridge:
       polling-delay-in-ms: 5000
       file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       max-messages-per-poll: 10
+      max-pool-size: 3
     sftp:
       active: true
       host: localhost
@@ -37,6 +38,7 @@ data-bridge:
       polling-delay-in-ms: 5000
       file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       max-messages-per-poll: 10
+      max-pool-size: 3
   sinks:
     minio:
       url: http://localhost:9000
