@@ -84,7 +84,7 @@ public class FtpDynamicBeanCreator implements BeanDefinitionRegistryPostProcesso
                 .from(Ftp.inboundAdapter(ftpSessionFactory)
                                 .deleteRemoteFiles(false)
                                 .preserveTimestamp(true)
-                                .filter(FtpInboundFileFilter.ftpInboundFileFilter(ftpConfiguration, fileMetadataConfiguration))
+                                .filter(FtpInboundFileFilter.ftpInboundFileFilter(fileMetadataConfiguration))
                                 .remoteDirectory(ftpConfiguration.getBaseDirectory() + fileMetadataConfiguration.sourceDirectory())
                                 .localDirectory(Files.createTempDirectory(SYNCHRONIZE_TEMP_DIRECTORY_PREFIX).toFile())
                                 .autoCreateLocalDirectory(true)

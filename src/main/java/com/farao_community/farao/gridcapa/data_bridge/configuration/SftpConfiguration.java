@@ -16,7 +16,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConditionalOnProperty(prefix = "data-bridge.sources.sftp", name = "active", havingValue = "true")
 public class SftpConfiguration extends SourceConfiguration {
 
-    public SftpConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, String fileListPersistenceFile, int maxMessagesPerPoll, int maxPoolSize) {
-        super(host, port, username, password, baseDirectory, pollingDelayInMs, fileListPersistenceFile, maxMessagesPerPoll, maxPoolSize);
+    public SftpConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, int maxMessagesPerPoll, int maxPoolSize) {
+        super(host, port, username, password, baseDirectory, pollingDelayInMs, maxMessagesPerPoll, maxPoolSize);
     }
 }

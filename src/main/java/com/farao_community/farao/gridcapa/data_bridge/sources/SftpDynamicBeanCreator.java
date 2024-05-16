@@ -83,7 +83,7 @@ public class SftpDynamicBeanCreator implements BeanDefinitionRegistryPostProcess
                 .from(Sftp.inboundAdapter(sftpSessionFactory)
                                 .deleteRemoteFiles(false)
                                 .preserveTimestamp(true)
-                                .filter(SftpInboundFileFilter.sftpInboundFileFilter(sftpConfiguration, fileMetadataConfiguration))
+                                .filter(SftpInboundFileFilter.sftpInboundFileFilter(fileMetadataConfiguration))
                                 .remoteDirectory(sftpConfiguration.getBaseDirectory() + fileMetadataConfiguration.sourceDirectory())
                                 .localDirectory(Files.createTempDirectory(SYNCHRONIZE_TEMP_DIRECTORY_PREFIX).toFile())
                                 .autoCreateLocalDirectory(true)

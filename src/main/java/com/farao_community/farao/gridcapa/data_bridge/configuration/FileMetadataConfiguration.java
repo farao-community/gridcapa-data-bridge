@@ -17,9 +17,10 @@ public final class FileMetadataConfiguration {
     private final boolean doUnzip;
     private final String sourceDirectory;
     private final String sinkDirectory;
+    private final String fileListPersistenceFile;
 
     public FileMetadataConfiguration(String fileType, String fileRegex, String timeValidity, String remoteFileRegex,
-                                     Boolean doUnzip, String sourceDirectory, String sinkDirectory) {
+                                     Boolean doUnzip, String sourceDirectory, String sinkDirectory, String fileListPersistenceFile) {
         this.fileType = fileType;
         this.fileRegex = fileRegex;
         this.timeValidity = timeValidity;
@@ -27,6 +28,7 @@ public final class FileMetadataConfiguration {
         this.doUnzip = doUnzip != null ? doUnzip : true;
         this.sourceDirectory = sourceDirectory;
         this.sinkDirectory = sinkDirectory;
+        this.fileListPersistenceFile = fileListPersistenceFile;
     }
 
     public String fileType() {
@@ -55,5 +57,9 @@ public final class FileMetadataConfiguration {
 
     public String sinkDirectory() {
         return sinkDirectory;
+    }
+
+    public String getFileListPersistenceFile() {
+        return fileListPersistenceFile;
     }
 }

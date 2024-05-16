@@ -10,12 +10,14 @@ data-bridge:
         do-unzip: true
         source-directory: "cgms"
         sink-directory: "CGMs"
+        file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       - file-type: CRAC
         file-regex: regex_test
         time-validity: hourly
         remote-file-regex: ".*Transit.*.zip|[0-9]{8}_[0-9]{4}_.*Transit.*.(xml|XML)"
         source-directory: "cracs"
         sink-directory: "CRACs"
+        file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
   sources:
     ftp:
       active: true
@@ -25,7 +27,6 @@ data-bridge:
       password: gridcapa
       base-directory: /data/gridcapa/cse/d2cc/
       polling-delay-in-ms: 5000
-      file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       max-messages-per-poll: 10
       max-pool-size: 3
     sftp:
@@ -36,7 +37,6 @@ data-bridge:
       password: gridcapa
       base-directory: /data/gridcapa/cse/d2cc/
       polling-delay-in-ms: 5000
-      file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       max-messages-per-poll: 10
       max-pool-size: 3
   sinks:

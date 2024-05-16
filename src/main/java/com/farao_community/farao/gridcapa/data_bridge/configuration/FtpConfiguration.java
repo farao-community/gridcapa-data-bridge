@@ -18,8 +18,8 @@ public class FtpConfiguration extends SourceConfiguration {
 
     private final int dataTimeout;
 
-    public FtpConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, String fileListPersistenceFile, int maxMessagesPerPoll, int dataTimeout, int maxPoolSize) {
-        super(host, port, username, password, baseDirectory, pollingDelayInMs, fileListPersistenceFile, maxMessagesPerPoll, maxPoolSize);
+    public FtpConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, int maxMessagesPerPoll, int dataTimeout, int maxPoolSize) {
+        super(host, port, username, password, baseDirectory, pollingDelayInMs, maxMessagesPerPoll, maxPoolSize);
         this.dataTimeout = dataTimeout;
     }
 
