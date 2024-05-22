@@ -27,9 +27,9 @@ public class FileMetadataProvider implements MetadataProvider {
     static final String GRIDCAPA_FILE_TYPE_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_TYPE_METADATA_KEY);
     static final String GRIDCAPA_FILE_NAME_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY);
     static final String GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY = removeXAmzMetaPrefix(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY);
-    public static final String MONTH = "month";
-    public static final String YEAR = "year";
-    public static final String DAY = "day";
+    private static final String MONTH = "month";
+    private static final String YEAR = "year";
+    private static final String DAY = "day";
 
     private final DataBridgeConfiguration dataBridgeConfiguration;
 
