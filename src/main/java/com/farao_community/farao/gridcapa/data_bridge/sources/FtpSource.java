@@ -111,6 +111,7 @@ public class FtpSource {
         fileSynchronizer.setPreserveTimestamp(true);
         CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
         fileListFilter.addFilter(new FtpRegexPatternFileListFilter(String.join("|", remoteFileConfiguration.getRemoteFileRegex())));
+        fileListFilter.addFilter(new TimestampWithinADayFtpFileFilter());
         fileListFilter.addFilter(createFilePersistenceFilter());
         fileSynchronizer.setFilter(fileListFilter);
         return fileSynchronizer;
