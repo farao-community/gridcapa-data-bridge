@@ -28,6 +28,7 @@ public final class FtpInboundFileFilter {
     public static FileListFilter ftpInboundFileFilter(FileMetadataConfiguration fileMetadataConfiguration)  {
         CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
         fileListFilter.addFilter(new FtpRegexPatternFileListFilter(fileMetadataConfiguration.remoteFileRegex()));
+        fileListFilter.addFilter(new TimestampWithinADayFtpFileFilter());
         fileListFilter.addFilter(createFilePersistenceFilter(fileMetadataConfiguration));
         return fileListFilter;
 
