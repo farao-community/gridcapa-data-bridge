@@ -42,7 +42,7 @@ public final class FtpInboundFileFilter {
     }
 
     private static ConcurrentMetadataStore createMetadataStoreForFilePersistence(FileMetadataConfiguration fileMetadataConfiguration) {
-        Path persistenceFilePath = Path.of(fileMetadataConfiguration.getFileListPersistenceFile());
+        Path persistenceFilePath = Path.of(fileMetadataConfiguration.fileListPersistenceFile());
         PropertiesPersistingMetadataStore filePersistenceMetadataStore = new PropertiesPersistingMetadataStore();
         filePersistenceMetadataStore.setBaseDirectory(persistenceFilePath.getParent().toString());
         filePersistenceMetadataStore.setFileName(persistenceFilePath.getFileName().toString());
