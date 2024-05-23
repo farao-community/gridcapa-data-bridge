@@ -32,6 +32,7 @@ import org.springframework.integration.metadata.SimpleMetadataStore;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Marc Schwitzguebel {@literal <marc.schwitzguebel  at rte-france.com>}
@@ -70,7 +71,7 @@ public class FtpDynamicBeanCreator implements BeanDefinitionRegistryPostProcesso
                             throw new DataBridgeException(String.format("Unable to create inboundChannelAdapter for file type %s", fileMetadataConfiguration.fileType()), e);
                         }
                     });
-                    registry.registerBeanDefinition(String.format("ftpInboundChannel%sBean", fileMetadataConfiguration.fileType()), beanDefinition);
+                    registry.registerBeanDefinition(String.format("ftpInboundChannel%sBean%s", fileMetadataConfiguration.fileType(), UUID.randomUUID()), beanDefinition);
                 });
     }
 
@@ -89,7 +90,7 @@ public class FtpDynamicBeanCreator implements BeanDefinitionRegistryPostProcesso
                                 .localDirectory(Files.createTempDirectory(SYNCHRONIZE_TEMP_DIRECTORY_PREFIX).toFile())
                                 .autoCreateLocalDirectory(true)
                                 .localFilter(new FileSystemPersistentAcceptOnceFileListFilter(new SimpleMetadataStore(), "")),
-                        e -> e.id("ftpSourceChannel" + fileMetadataConfiguration.fileType())
+                        e -> e.id("ftpSourceChannel" + fileMetadataConfiguration.fileType() + UUID.randomUUID())
                                 .autoStartup(true)
                                 .poller(Pollers.fixedDelay(ftpConfiguration.getPollingDelayInMs()).maxMessagesPerPoll(ftpConfiguration.getMaxMessagesPerPoll())))
                 .log(LoggingHandler.Level.INFO, PARSER.parseExpression("\"ftp treatment of file \" + headers.file_name"))
