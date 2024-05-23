@@ -6,6 +6,8 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge;
 
+import com.farao_community.farao.gridcapa.data_bridge.configuration.DataBridgeConfiguration;
+import com.farao_community.farao.gridcapa.data_bridge.configuration.FileMetadataConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,13 +21,24 @@ import static org.junit.jupiter.api.Assertions.*;
 class FileMetadataConfigurationTest {
 
     @Autowired
-    private FileMetadataConfiguration fileMetadataConfiguration;
+    private DataBridgeConfiguration dataBridgeConfiguration;
 
     @Test
     void testDefaultConfig() {
-        assertEquals("CGM", fileMetadataConfiguration.getFileType());
-        assertEquals("regex_test", fileMetadataConfiguration.getFileRegex());
-        assertEquals("CSE_D2CC", fileMetadataConfiguration.getTargetProcess());
-        assertEquals("hourly", fileMetadataConfiguration.getTimeValidity());
+        assertEquals("CSE_D2CC", dataBridgeConfiguration.getTargetProcess());
+        FileMetadataConfiguration file0 = dataBridgeConfiguration.getFiles().get(0);
+        assertEquals("CGM", file0.fileType());
+        assertEquals("regex_test", file0.fileRegex());
+        assertEquals(".*.zip|[0-9]{8}_[0-9]{4}_.*.(uct|UCT)", file0.remoteFileRegex());
+        assertTrue(file0.doUnzip());
+        assertEquals("cgms", file0.sourceDirectory());
+        assertEquals("CGMs", file0.sinkDirectory());
+        FileMetadataConfiguration file1 = dataBridgeConfiguration.getFiles().get(1);
+        assertEquals("CRAC", file1.fileType());
+        assertEquals("regex_test", file1.fileRegex());
+        assertEquals(".*Transit.*.zip|[0-9]{8}_[0-9]{4}_.*Transit.*.(xml|XML)", file1.remoteFileRegex());
+        assertTrue(file1.doUnzip());
+        assertEquals("cracs", file1.sourceDirectory());
+        assertEquals("CRACs", file1.sinkDirectory());
     }
 }

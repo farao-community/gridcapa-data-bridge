@@ -1,13 +1,23 @@
 data-bridge:
-  zone-id: "Europe/Paris"
-  target-process: CSE_D2CC
-  file-type: CGM
-  file-regex: regex_test
-  time-validity: hourly
-  remote-file-regex:
-    - ".*.zip"
-    - "[0-9]{8}_[0-9]{4}_.*.(uct|UCT)"
-  do-unzip: true
+  configuration:
+    zone-id: "Europe/Paris"
+    target-process: CSE_D2CC
+    files:
+      - file-type: CGM
+        file-regex: regex_test
+        time-validity: hourly
+        remote-file-regex: ".*.zip|[0-9]{8}_[0-9]{4}_.*.(uct|UCT)"
+        do-unzip: true
+        source-directory: "cgms"
+        sink-directory: "CGMs"
+        file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
+      - file-type: CRAC
+        file-regex: regex_test
+        time-validity: hourly
+        remote-file-regex: ".*Transit.*.zip|[0-9]{8}_[0-9]{4}_.*Transit.*.(xml|XML)"
+        source-directory: "cracs"
+        sink-directory: "CRACs"
+        file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
   sources:
     ftp:
       active: true
@@ -15,18 +25,20 @@ data-bridge:
       port: 21
       username: gridcapa
       password: gridcapa
-      base-directory: /data/gridcapa/cse/d2cc/cgms
+      base-directory: /data/gridcapa/cse/d2cc/
       polling-delay-in-ms: 5000
       max-messages-per-poll: 10
+      max-pool-size: 3
     sftp:
       active: true
       host: localhost
       port: 2222
       username: gridcapa
       password: gridcapa
-      base-directory: /data/gridcapa/cse/d2cc/cgms
+      base-directory: /data/gridcapa/cse/d2cc/
       polling-delay-in-ms: 5000
       max-messages-per-poll: 10
+      max-pool-size: 3
   sinks:
     minio:
       url: http://localhost:9000

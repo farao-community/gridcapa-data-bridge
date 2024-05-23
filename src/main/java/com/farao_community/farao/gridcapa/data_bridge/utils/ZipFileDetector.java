@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package com.farao_community.farao.gridcapa.data_bridge;
+package com.farao_community.farao.gridcapa.data_bridge.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.io.UncheckedIOException;
 /**
  * @author Amira Kahya {@literal <amira.kahya at rte-france.com>}
  */
-final class ZipFileDetector {
+public final class ZipFileDetector {
 
     private ZipFileDetector() {
         throw new AssertionError("Utility class should not be instantiated");
