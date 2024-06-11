@@ -39,7 +39,7 @@ import java.util.UUID;
  */
 public class FtpDynamicBeanCreator implements BeanDefinitionRegistryPostProcessor {
 
-    private static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
+    private static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-core-cc-data-bridge";
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
 
     private final List<FileMetadataConfiguration> fileMetadataConfigurations;

@@ -1,4 +1,4 @@
-# gridcapa-data-bridge
+# gridcapa-core-cc-data-bridge
 [![MPL-2.0 License](https://img.shields.io/badge/license-MPL_2.0-blue.svg)](https://www.mozilla.org/en-US/MPL/2.0/)
 
 This repository contains the data bridge for GridCapa. It is dedicated to retrieve and validate input files and
@@ -23,5 +23,5 @@ mvn install
 Then build docker image
 
 ```bash
-docker build -t farao/gridcapa-data-bridge .
+docker build -t farao/gridcapa-core-cc-data-bridge .
 ```

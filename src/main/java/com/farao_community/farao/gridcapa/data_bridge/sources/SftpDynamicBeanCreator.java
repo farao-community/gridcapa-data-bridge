@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class SftpDynamicBeanCreator implements BeanDefinitionRegistryPostProcessor {
 
-    private static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
+    private static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-core-cc-data-bridge";
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
 
     private final List<FileMetadataConfiguration> fileMetadataConfigurations;
