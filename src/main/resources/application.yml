@@ -31,7 +31,7 @@ data-bridge:
       max-messages-per-poll: 10
       max-pool-size: 2
       timeouts:
-        data-timeout: ${SOURCE_FTP_DATA_TIMEOUT:60000}
+        data-timeout: 60000
         default-timeout: 500
         connect-timeout: 1000
         session-wait-timeout: 1000
