@@ -7,16 +7,16 @@
 package com.farao_community.farao.gridcapa.data_bridge.configuration;
 
 /**
- * @author Marc Schwitzguebel {@literal <marc.schwitzguebel  at rte-france.com>}
+ * @author Marc Schwitzguebel {@literal <marc.schwitzguebel at rte-france.com>}
+ * @author Vincent Bochet {@literal <vincent.bochet at rte-france.com>}
  */
-public record FileMetadataConfiguration(String fileType, String fileRegex, String timeValidity, String remoteFileRegex,
-                                         Boolean doUnzip, String sourceDirectory, String sinkDirectory, String fileListPersistenceFile) {
+public record FileMetadataConfiguration(FileType fileType, String fileRegex, String remoteFileRegex, Boolean doUnzip,
+                                         String sourceDirectory, String sinkDirectory, String fileListPersistenceFile) {
 
-    public FileMetadataConfiguration(String fileType, String fileRegex, String timeValidity, String remoteFileRegex,
-                                      Boolean doUnzip, String sourceDirectory, String sinkDirectory, String fileListPersistenceFile) {
+    public FileMetadataConfiguration(FileType fileType, String fileRegex, String remoteFileRegex, Boolean doUnzip,
+                                      String sourceDirectory, String sinkDirectory, String fileListPersistenceFile) {
         this.fileType = fileType;
         this.fileRegex = fileRegex;
-        this.timeValidity = timeValidity;
         this.remoteFileRegex = remoteFileRegex;
         this.doUnzip = doUnzip != null ? doUnzip : true;
         this.sourceDirectory = sourceDirectory;

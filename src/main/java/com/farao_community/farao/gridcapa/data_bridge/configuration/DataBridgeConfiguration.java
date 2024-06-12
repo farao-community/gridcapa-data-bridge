@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge.configuration;
 
-import com.farao_community.farao.gridcapa.data_bridge.DataBridgeException;
+import com.farao_community.farao.gridcapa.data_bridge.exception.DataBridgeException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;

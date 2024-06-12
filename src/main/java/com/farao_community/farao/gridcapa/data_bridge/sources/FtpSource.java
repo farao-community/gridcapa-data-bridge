@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 package com.farao_community.farao.gridcapa.data_bridge.sources;
-import com.farao_community.farao.gridcapa.data_bridge.DataBridgeException;
+import com.farao_community.farao.gridcapa.data_bridge.exception.DataBridgeException;
 import com.farao_community.farao.gridcapa.data_bridge.configuration.FtpConfiguration;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;

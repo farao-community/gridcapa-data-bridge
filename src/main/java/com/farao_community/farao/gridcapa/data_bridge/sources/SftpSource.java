@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge.sources;
 
-import com.farao_community.farao.gridcapa.data_bridge.DataBridgeException;
+import com.farao_community.farao.gridcapa.data_bridge.exception.DataBridgeException;
 import com.farao_community.farao.gridcapa.data_bridge.configuration.SftpConfiguration;
 import org.apache.sshd.sftp.client.SftpClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
