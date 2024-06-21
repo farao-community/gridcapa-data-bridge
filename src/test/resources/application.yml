@@ -5,14 +5,12 @@ data-bridge:
     files:
       - file-type: CBCORA
         file-regex: ".*F301.*.xml"
-        time-validity: hourly
         remote-file-regex: ".*F301.*.xml"
         source-directory: "cbcoras"
         sink-directory: "CBCORAs"
         file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       - file-type: CGM
         file-regex: ".*F119.*.zip"
-        time-validity: hourly
         remote-file-regex: ".*F119.*.zip"
         do-unzip: true
         source-directory: "cgms"
@@ -20,7 +18,6 @@ data-bridge:
         file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       - file-type: DCCGM
         file-regex: ".*F139.*.zip"
-        time-validity: hourly
         remote-file-regex: ".*F139.*.zip"
         do-unzip: true
         source-directory: "dccgms"
@@ -28,28 +25,24 @@ data-bridge:
         file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       - file-type: GLSK
         file-regex: ".*F319.*.xml"
-        time-validity: daily
         remote-file-regex: ".*F319.*.xml"
         source-directory: "glsks"
         sink-directory: "GLSKs"
         file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       - file-type: RAOREQUEST
         file-regex: ".*F302.*.xml"
-        time-validity: daily
         remote-file-regex: ".*F302.*.xml"
         source-directory: "raorequests"
         sink-directory: "RAOREQUESTs"
         file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       - file-type: REFPROG
         file-regex: ".*F120.*.xml"
-        time-validity: daily
         remote-file-regex: ".*F120.*.xml"
         source-directory: "refprogs"
         sink-directory: "REFPROGs"
         file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       - file-type: VIRTUALHUB
         file-regex: ".*F327.*.xml"
-        time-validity: yearly
         remote-file-regex: ".*F327.*.xml"
         do-unzip: false
         source-directory: "virtualhubs"
