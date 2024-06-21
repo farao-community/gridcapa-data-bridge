@@ -15,7 +15,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class DocumentIdReader extends DefaultHandler {
 
     private String documentId = null;
-    private StringBuilder data = null;
+    private StringBuilder fieldValue = null;
     private boolean readFieldValue = false;
 
     public String getDocumentId() {
@@ -24,27 +24,27 @@ public class DocumentIdReader extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
-        if (qName.equalsIgnoreCase("DocumentIdentification")) {
+        if ("DocumentIdentification".equalsIgnoreCase(qName)) {
             // F120, F301, F319
             documentId = attributes.getValue("v");
-        } else if (qName.equalsIgnoreCase("MessageID")) {
+        } else if ("MessageID".equalsIgnoreCase(qName)) {
             // F119, F139
             readFieldValue = true;
         }
         // create the data container
-        data = new StringBuilder();
+        fieldValue = new StringBuilder();
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) {
         if (readFieldValue) {
-            documentId = data.toString();
+            documentId = fieldValue.toString();
             readFieldValue = false;
         }
     }
 
     @Override
     public void characters(char[] ch, int start, int length) {
-        data.append(new String(ch, start, length));
+        fieldValue.append(new String(ch, start, length));
     }
 }
