@@ -6,7 +6,7 @@
  */
 package com.farao_community.farao.gridcapa.data_bridge.sources;
 
-import com.farao_community.farao.gridcapa.data_bridge.DataBridgeException;
+import com.farao_community.farao.gridcapa.data_bridge.exception.DataBridgeException;
 import com.farao_community.farao.gridcapa.data_bridge.configuration.DataBridgeConfiguration;
 import com.farao_community.farao.gridcapa.data_bridge.configuration.FileMetadataConfiguration;
 import com.farao_community.farao.gridcapa.data_bridge.configuration.SftpConfiguration;
@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class SftpDynamicBeanCreator implements BeanDefinitionRegistryPostProcessor {
 
-    private static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-core-cc-data-bridge";
+    private static final String SYNCHRONIZE_TEMP_DIRECTORY_PREFIX = "gridcapa-data-bridge";
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
 
     private final List<FileMetadataConfiguration> fileMetadataConfigurations;

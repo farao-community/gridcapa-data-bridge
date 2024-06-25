@@ -3,21 +3,52 @@ data-bridge:
     zone-id: "Europe/Paris"
     target-process: CSE_D2CC
     files:
+      - file-type: CBCORA
+        file-regex: ".*F301.*.xml"
+        remote-file-regex: ".*F301.*.xml"
+        source-directory: "cbcoras"
+        sink-directory: "CBCORAs"
+        file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
       - file-type: CGM
-        file-regex: regex_test
-        time-validity: hourly
-        remote-file-regex: ".*.zip|[0-9]{8}_[0-9]{4}_.*.(uct|UCT)"
+        file-regex: ".*F119.*.zip"
+        remote-file-regex: ".*F119.*.zip"
         do-unzip: true
         source-directory: "cgms"
         sink-directory: "CGMs"
         file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
-      - file-type: CRAC
-        file-regex: regex_test
-        time-validity: hourly
-        remote-file-regex: ".*Transit.*.zip|[0-9]{8}_[0-9]{4}_.*Transit.*.(xml|XML)"
-        source-directory: "cracs"
-        sink-directory: "CRACs"
+      - file-type: DCCGM
+        file-regex: ".*F139.*.zip"
+        remote-file-regex: ".*F139.*.zip"
+        do-unzip: true
+        source-directory: "dccgms"
+        sink-directory: "DCCGMs"
         file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
+      - file-type: GLSK
+        file-regex: ".*F319.*.xml"
+        remote-file-regex: ".*F319.*.xml"
+        source-directory: "glsks"
+        sink-directory: "GLSKs"
+        file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
+      - file-type: RAOREQUEST
+        file-regex: ".*F302.*.xml"
+        remote-file-regex: ".*F302.*.xml"
+        source-directory: "raorequests"
+        sink-directory: "RAOREQUESTs"
+        file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
+      - file-type: REFPROG
+        file-regex: ".*F120.*.xml"
+        remote-file-regex: ".*F120.*.xml"
+        source-directory: "refprogs"
+        sink-directory: "REFPROGs"
+        file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
+      - file-type: VIRTUALHUB
+        file-regex: ".*F327.*.xml"
+        remote-file-regex: ".*F327.*.xml"
+        do-unzip: false
+        source-directory: "virtualhubs"
+        sink-directory: "VIRTUALHUBs"
+        file-list-persistence-file: /tmp/gridcapa/ftp-metadata-store.properties
+
   sources:
     ftp:
       active: true
