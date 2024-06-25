@@ -16,14 +16,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConditionalOnProperty(prefix = "data-bridge.sources.ftp", name = "active", havingValue = "true")
 public class FtpConfiguration extends SourceConfiguration {
 
-    private final int dataTimeout;
+    private final FtpTimeouts timeouts;
 
-    public FtpConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, int maxMessagesPerPoll, int dataTimeout, int maxPoolSize) {
+    public FtpConfiguration(String host, int port, String username, String password, String baseDirectory, int pollingDelayInMs, int maxMessagesPerPoll, int maxPoolSize, FtpTimeouts timeouts) {
         super(host, port, username, password, baseDirectory, pollingDelayInMs, maxMessagesPerPoll, maxPoolSize);
-        this.dataTimeout = dataTimeout;
+        this.timeouts = timeouts;
     }
 
-    public int getDataTimeout() {
-        return dataTimeout;
+    public FtpTimeouts getFtpTimeouts() {
+        return  timeouts;
     }
 }
