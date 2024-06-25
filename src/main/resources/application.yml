@@ -26,9 +26,13 @@ data-bridge:
       password: ${SOURCE_FTP_PASSWORD:gridcapa}
       base-directory: ${SOURCE_FTP_BASE_DIRECTORY:/data/gridcapa/cse/d2cc/inputs}
       polling-delay-in-ms: ${SOURCE_FTP_POLLING_DELAY:5000}
-      data-timeout: ${SOURCE_FTP_DATA_TIMEOUT:60000}
       max-messages-per-poll: 10
       max-pool-size: 2
+      timeouts:
+        data-timeout: 60000
+        default-timeout: 500
+        connect-timeout: 1000
+        session-wait-timeout: 1000
     sftp:
       active: ${SOURCE_SFTP_ACTIVE:false}
       host: ${SOURCE_SFTP_HOST:localhost}

@@ -38,8 +38,13 @@ public class FtpSource {
         ftpSessionFactory.setUsername(ftpConfiguration.getUsername());
         ftpSessionFactory.setPassword(ftpConfiguration.getPassword());
         ftpSessionFactory.setClientMode(FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE);
-        ftpSessionFactory.setDataTimeout(ftpConfiguration.getDataTimeout());
-        return new CachingSessionFactory<>(ftpSessionFactory, ftpConfiguration.getMaxPoolSize());
+        ftpSessionFactory.setDataTimeout(ftpConfiguration.getFtpTimeouts().dataTimeout());
+        ftpSessionFactory.setConnectTimeout(ftpConfiguration.getFtpTimeouts().connectTimeout());
+        ftpSessionFactory.setDefaultTimeout(ftpConfiguration.getFtpTimeouts().defaultTimeout());
+        CachingSessionFactory<FTPFile> cachingSessionFactory =  new CachingSessionFactory<>(ftpSessionFactory, ftpConfiguration.getMaxPoolSize());
+        cachingSessionFactory.setSessionWaitTimeout(ftpConfiguration.getFtpTimeouts().sessionWaitTimeout());
+        cachingSessionFactory.setTestSession(true);
+        return cachingSessionFactory;
     }
 
     @Bean
