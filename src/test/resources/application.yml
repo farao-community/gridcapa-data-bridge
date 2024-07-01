@@ -1,6 +1,6 @@
 data-bridge:
   configuration:
-    zone-id: "Europe/Paris"
+#    zone-id: "Europe/Paris"
     target-process: CSE_D2CC
     files:
       - file-type: CGM
