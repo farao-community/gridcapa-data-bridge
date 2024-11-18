@@ -82,6 +82,12 @@
             <artifactId>spring-integration-zip</artifactId>
             <version>${spring.integration.zip.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.i2p.crypto</groupId>
+            <artifactId>eddsa</artifactId>
+            <version>0.3.0</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
