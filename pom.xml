@@ -29,6 +29,8 @@
         <spring.integration.aws.version>2.4.0</spring.integration.aws.version>
         <spring.integration.zip.version>1.0.4.RELEASE</spring.integration.zip.version>
         <gridcapa.starter.minio.adapter.version>1.1.2</gridcapa.starter.minio.adapter.version>
+        <apache-sshd.version>2.14.0</apache-sshd.version>
+        <eddsa.version>0.3.0</eddsa.version>
     </properties>
 
     <build>
@@ -82,10 +84,32 @@
             <artifactId>spring-integration-zip</artifactId>
             <version>${spring.integration.zip.version}</version>
         </dependency>
+        <!--
+        Force version 2.14.0 of org.apache.sshd version.
+        Current version of Spring uses version 2.11.0 of org.apache.sshd by default.
+        However, this version contains a lack of feature concerning the keepAlive requests (see https://issues.apache.org/jira/browse/SSHD-1237) that is fixed in version 2.13 and above.
+        This lack of feature causes troubles when using SFTP server connection.
+        -->
+        <dependency>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-common</artifactId>
+            <version>${apache-sshd.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-core</artifactId>
+            <version>${apache-sshd.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.sshd</groupId>
+            <artifactId>sshd-sftp</artifactId>
+            <version>${apache-sshd.version}</version>
+        </dependency>
+        <!-- Needed for EdDSA key verification when using SFTP -->
         <dependency>
             <groupId>net.i2p.crypto</groupId>
             <artifactId>eddsa</artifactId>
-            <version>0.3.0</version>
+            <version>${eddsa.version}</version>
         </dependency>
 
         <!-- Test dependencies -->
