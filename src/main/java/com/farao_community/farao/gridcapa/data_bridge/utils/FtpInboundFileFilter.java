@@ -7,6 +7,7 @@
 package com.farao_community.farao.gridcapa.data_bridge.utils;
 
 import com.farao_community.farao.gridcapa.data_bridge.configuration.FileMetadataConfiguration;
+import org.apache.commons.net.ftp.FTPFile;
 import org.springframework.integration.file.filters.CompositeFileListFilter;
 import org.springframework.integration.file.filters.FileListFilter;
 import org.springframework.integration.ftp.filters.FtpPersistentAcceptOnceFileListFilter;
@@ -25,8 +26,8 @@ public final class FtpInboundFileFilter {
         throw new AssertionError("Utility DataBridgeFtpInboundFileSynchronizer class should not be instantiated");
     }
 
-    public static FileListFilter ftpInboundFileFilter(FileMetadataConfiguration fileMetadataConfiguration)  {
-        CompositeFileListFilter fileListFilter = new CompositeFileListFilter();
+    public static FileListFilter<FTPFile> ftpInboundFileFilter(FileMetadataConfiguration fileMetadataConfiguration)  {
+        CompositeFileListFilter<FTPFile> fileListFilter = new CompositeFileListFilter<>();
         fileListFilter.addFilter(new FtpRegexPatternFileListFilter(fileMetadataConfiguration.remoteFileRegex()));
         fileListFilter.addFilter(new TimestampWithinADayFtpFileFilter());
         fileListFilter.addFilter(createFilePersistenceFilter(fileMetadataConfiguration));
