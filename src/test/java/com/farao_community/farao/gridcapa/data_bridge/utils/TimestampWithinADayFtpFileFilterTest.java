@@ -26,7 +26,7 @@ class TimestampWithinADayFtpFileFilterTest {
     private static final long NB_MS_IN_AN_HOUR = 60 * 60 * 1000;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         filter = new TimestampWithinADayFtpFileFilter();
     }
 
