@@ -25,6 +25,7 @@
     </licenses>
 
     <properties>
+        <argLine /> <!-- required for java agent declaration, do not remove -->
         <!-- Dependency versions -->
         <spring.integration.aws.version>2.4.0</spring.integration.aws.version>
         <spring.integration.zip.version>6.5.0</spring.integration.zip.version>
@@ -50,7 +51,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-javaagent:${org.mockito:mockito-core:jar}</argLine>
+                    <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
                 </configuration>
             </plugin>
             <plugin>
