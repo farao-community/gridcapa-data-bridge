@@ -246,8 +246,9 @@ class FileMetadataProviderTest {
                              "-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00)[abAB]{0,1}" +
                              "-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)";
 
-        final String fileName = "20251026-0200-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv";
-        mockConfig("VALID_INTRADAY", "VERTICES", "HOURLY", regex, "CET");
+        final String fileName = "20251026-" + hourStr +
+                                "00-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv";
+        mockConfig("VALID_INTRADAY", "VERTICES", "HOURLY", regex, zone);
         final Message<?> fileMessage = MessageBuilder
                 .withPayload("")
                 .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, fileName)
