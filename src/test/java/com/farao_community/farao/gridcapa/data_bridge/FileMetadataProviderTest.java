@@ -241,7 +241,7 @@ class FileMetadataProviderTest {
 
     @ParameterizedTest
     @MethodSource("provideParameters")
-    void checkHourParsingAtDst(final String hourStr, final String zone){
+    void checkHourParsingAtDst(final String hourStr, final String zone) {
         final String regex = "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-3]{1}[0-9]{1})" +
                              "-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00)[abAB]{0,1}" +
                              "-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)";
