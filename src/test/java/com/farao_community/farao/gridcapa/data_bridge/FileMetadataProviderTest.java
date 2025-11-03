@@ -10,18 +10,24 @@ import com.farao_community.farao.gridcapa.data_bridge.configuration.DataBridgeCo
 import com.farao_community.farao.gridcapa.data_bridge.configuration.FileMetadataConfiguration;
 import com.farao_community.farao.minio_adapter.starter.MinioAdapterConstants;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
+import static com.farao_community.farao.gridcapa.data_bridge.FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -233,11 +239,45 @@ class FileMetadataProviderTest {
         assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "NTC_RED", "test_20210203.xml", "");
     }
 
+    @ParameterizedTest
+    @MethodSource("provideParameters")
+    void checkHourParsingAtDst(final String hourStr, final String zone){
+        final String regex = "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-3]{1}[0-9]{1})" +
+                             "-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00)[abAB]{0,1}" +
+                             "-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)";
+
+        final String fileName = "20251026-0200-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv";
+        mockConfig("VALID_INTRADAY", "VERTICES", "HOURLY", regex, "CET");
+        final Message<?> fileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, fileName)
+                .build();
+        final Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(fileMessage, metadataMap);
+        final String validityInterval = metadataMap.get(GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY);
+        assertNotEquals(validityInterval.split("/")[0],
+                        validityInterval.split("/")[1]);
+    }
+
+    private static Stream<Arguments> provideParameters() {
+        return Stream.of(
+                Arguments.of("01", "UTC"),
+                Arguments.of("01", "Europe/Paris"),
+                Arguments.of("01", "CET"),
+                Arguments.of("02", "UTC"),
+                Arguments.of("02", "Europe/Paris"),
+                Arguments.of("02", "CET"),
+                Arguments.of("03", "UTC"),
+                Arguments.of("03", "Europe/Paris"),
+                Arguments.of("03", "CET")
+        );
+    }
+
     void assertAllInputFileMetadataEquals(Map<String, String> actualMetadata, String targetProcess, String fileType, String fileName, String fileValidityInterval) {
         assertEquals(MinioAdapterConstants.DEFAULT_GRIDCAPA_INPUT_GROUP_METADATA_VALUE, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_GROUP_METADATA_KEY));
         assertEquals(targetProcess, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY));
         assertEquals(fileType, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
         assertEquals(fileName, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_NAME_METADATA_KEY));
-        assertEquals(fileValidityInterval, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
+        assertEquals(fileValidityInterval, actualMetadata.get(GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY));
     }
 }
