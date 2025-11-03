@@ -233,6 +233,96 @@ class FileMetadataProviderTest {
         assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "NTC_RED", "test_20210203.xml", "");
     }
 
+    @Test
+    void checkSpecificZoneIdUsed() {
+        mockConfig(
+                "CORE-VALID-IDCC",
+                "VERTICES",
+                "HOURLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-3]{1}[0-9]{1})-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00[abAB]{0,1})-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)",
+                "UCT"
+        );
+        Message<?> ucteFileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20250101-2000-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
+        assertAllInputFileMetadataEquals(metadataMap, "CORE-VALID-IDCC", "VERTICES", "20250101-2000-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv", "2025-01-01T20:00Z/2025-01-01T21:00Z");
+    }
+
+    @Test
+    void checkFileSpecificZoneIdUsedDstBeforeWinterTime() {
+        mockConfig(
+                "CORE-VALID-IDCC",
+                "VERTICES",
+                "HOURLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-3]{1}[0-9]{1})-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00[abAB]{0,1})-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)",
+                "Europe/Paris"
+        );
+        Message<?> ucteFileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20251026-0200A-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
+        assertAllInputFileMetadataEquals(metadataMap, "CORE-VALID-IDCC", "VERTICES", "20251026-0200A-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv", "2025-10-26T00:00Z/2025-10-26T01:00Z");
+    }
+
+    @Test
+    void checkFileSpecificZoneIdUsedDstAfterWinterTime() {
+        mockConfig(
+                "CORE-VALID-IDCC",
+                "VERTICES",
+                "HOURLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-3]{1}[0-9]{1})-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00[abAB]{0,1})-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)",
+                "Europe/Paris"
+        );
+        Message<?> ucteFileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20251026-0200B-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
+        assertAllInputFileMetadataEquals(metadataMap, "CORE-VALID-IDCC", "VERTICES", "20251026-0200B-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv", "2025-10-26T01:00Z/2025-10-26T02:00Z");
+    }
+
+    @Test
+    void checkFileSpecificZoneIdUsedDstBeforeSummerTime() {
+        mockConfig(
+                "CORE-VALID-IDCC",
+                "VERTICES",
+                "HOURLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-3]{1}[0-9]{1})-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00[abAB]{0,1})-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)",
+                "Europe/Paris"
+        );
+        Message<?> ucteFileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20250330-0300-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
+        assertAllInputFileMetadataEquals(metadataMap, "CORE-VALID-IDCC", "VERTICES", "20250330-0300-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv", "2025-03-30T01:00Z/2025-03-30T02:00Z");
+    }
+
+    @Test
+    void checkFileSpecificZoneIdUsedDstAfterSummerTime() {
+        mockConfig(
+                "CORE-VALID-IDCC",
+                "VERTICES",
+                "HOURLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-3]{1}[0-9]{1})-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00[abAB]{0,1})-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)",
+                "Europe/Paris"
+        );
+        Message<?> ucteFileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20250330-0400-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
+        assertAllInputFileMetadataEquals(metadataMap, "CORE-VALID-IDCC", "VERTICES", "20250330-0400-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv", "2025-03-30T02:00Z/2025-03-30T03:00Z");
+    }
+
     void assertAllInputFileMetadataEquals(Map<String, String> actualMetadata, String targetProcess, String fileType, String fileName, String fileValidityInterval) {
         assertEquals(MinioAdapterConstants.DEFAULT_GRIDCAPA_INPUT_GROUP_METADATA_VALUE, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_GROUP_METADATA_KEY));
         assertEquals(targetProcess, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY));

@@ -90,10 +90,37 @@ public class FileMetadataProvider implements MetadataProvider {
         int month = parseOrThrow(matcher, MONTH);
         int day = parseOrThrow(matcher, DAY);
         int hour = parseOrThrow(matcher, "hour");
-        int minute = parseOrThrow(matcher, "minute");
-        LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
-        LocalDateTime endDateTime = beginDateTime.plusHours(1);
-        return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
+        final String minutesDst = matcher.group("minute");
+        final boolean isFileDstNamed = minutesDst.matches("00[abAB]{0,1}");
+        final int minute = Integer.parseInt(minutesDst.substring(0, 2));
+        if (isFileDstNamed) {
+            return getDstFileValidityMetadata(minutesDst, year, month, day, hour, minute);
+        } else {
+            LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, hour, minute);
+            LocalDateTime endDateTime = beginDateTime.plusHours(1);
+            return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
+        }
+    }
+
+    private String getDstFileValidityMetadata(final String minutesDst,
+                             final int year,
+                             final int month,
+                             final int day,
+                             final int hour,
+                             final int minute) {
+        final LocalDateTime referenceDateTime = LocalDateTime.of(year, month, day, hour, minute);
+        ZonedDateTime dstEndingDateTime;
+        ZonedDateTime dstBeginningDateTime;
+        if (minutesDst.endsWith("a") || minutesDst.endsWith("A")) {
+            dstBeginningDateTime = referenceDateTime.atZone(ZoneId.of(dataBridgeConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC);
+            dstEndingDateTime = dstBeginningDateTime.plusHours(1);
+
+        } else {
+            final LocalDateTime endDateTime = referenceDateTime.plusHours(1);
+            dstEndingDateTime = endDateTime.atZone(ZoneId.of(dataBridgeConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC);
+            dstBeginningDateTime = dstEndingDateTime.plusHours(-1);
+        }
+        return dstBeginningDateTime + "/" + dstEndingDateTime;
     }
 
     private String getDailyFileValidityIntervalMetadata(Matcher matcher) {
