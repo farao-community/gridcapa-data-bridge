@@ -91,7 +91,7 @@ public class FileMetadataProvider implements MetadataProvider {
         int day = parseOrThrow(matcher, DAY);
         int hour = parseOrThrow(matcher, "hour");
         final String minutesDst = matcher.group("minute");
-        final boolean isFileDstNamed = minutesDst.matches("00[abAB]{0,1}");
+        final boolean isFileDstNamed = minutesDst.matches("00[abAB]?");
         final int minute = Integer.parseInt(minutesDst.substring(0, 2));
         if (isFileDstNamed) {
             return getDstFileValidityMetadata(minutesDst, year, month, day, hour, minute);
