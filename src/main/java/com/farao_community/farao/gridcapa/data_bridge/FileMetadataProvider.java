@@ -111,14 +111,15 @@ public class FileMetadataProvider implements MetadataProvider {
         final LocalDateTime referenceDateTime = LocalDateTime.of(year, month, day, hour, minute);
         final ZonedDateTime dstEndingDateTime;
         final ZonedDateTime dstBeginningDateTime;
+        final ZoneId zoneId = ZoneId.of(dataBridgeConfiguration.getZoneId());
         if (minutesDst.toUpperCase().endsWith("A")) {
-            dstBeginningDateTime = referenceDateTime.atZone(ZoneId.of(dataBridgeConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC);
+            dstBeginningDateTime = referenceDateTime.atZone(zoneId).withZoneSameInstant(ZoneOffset.UTC);
             dstEndingDateTime = dstBeginningDateTime.plusHours(1);
 
         } else {
             final LocalDateTime endDateTime = referenceDateTime.plusHours(1);
-            dstEndingDateTime = endDateTime.atZone(ZoneId.of(dataBridgeConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC);
-            dstBeginningDateTime = dstEndingDateTime.plusHours(-1);
+            dstEndingDateTime = endDateTime.atZone(zoneId).withZoneSameInstant(ZoneOffset.UTC);
+            dstBeginningDateTime = dstEndingDateTime.minusHours(1);
         }
         return dstBeginningDateTime + "/" + dstEndingDateTime;
     }
