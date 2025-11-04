@@ -323,6 +323,26 @@ class FileMetadataProviderTest {
         assertAllInputFileMetadataEquals(metadataMap, "CORE-VALID-IDCC", "VERTICES", "20250330-0400-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv", "2025-03-30T02:00Z/2025-03-30T03:00Z");
     }
 
+
+    @Test
+    void checkEmptyFileNameGivesNoInterval() {
+        mockConfig(
+                "CORE-VALID-IDCC",
+                "VERTICES",
+                "HOURLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-3]{1}[0-9]{1})-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00[abAB]{0,1})-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)",
+                "Europe/Paris"
+        );
+        Message<?> ucteFileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
+        assertAllInputFileMetadataEquals(metadataMap, "CORE-VALID-IDCC", "VERTICES", "", "");
+    }
+
+
     void assertAllInputFileMetadataEquals(Map<String, String> actualMetadata, String targetProcess, String fileType, String fileName, String fileValidityInterval) {
         assertEquals(MinioAdapterConstants.DEFAULT_GRIDCAPA_INPUT_GROUP_METADATA_VALUE, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_GROUP_METADATA_KEY));
         assertEquals(targetProcess, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY));
