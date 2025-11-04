@@ -103,15 +103,15 @@ public class FileMetadataProvider implements MetadataProvider {
     }
 
     private String getDstFileValidityMetadata(final String minutesDst,
-                             final int year,
-                             final int month,
-                             final int day,
-                             final int hour,
-                             final int minute) {
+                                              final int year,
+                                              final int month,
+                                              final int day,
+                                              final int hour,
+                                              final int minute) {
         final LocalDateTime referenceDateTime = LocalDateTime.of(year, month, day, hour, minute);
-        ZonedDateTime dstEndingDateTime;
-        ZonedDateTime dstBeginningDateTime;
-        if (minutesDst.endsWith("a") || minutesDst.endsWith("A")) {
+        final ZonedDateTime dstEndingDateTime;
+        final ZonedDateTime dstBeginningDateTime;
+        if (minutesDst.toUpperCase().endsWith("A")) {
             dstBeginningDateTime = referenceDateTime.atZone(ZoneId.of(dataBridgeConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC);
             dstEndingDateTime = dstBeginningDateTime.plusHours(1);
 
