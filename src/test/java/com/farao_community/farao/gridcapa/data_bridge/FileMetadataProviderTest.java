@@ -323,7 +323,6 @@ class FileMetadataProviderTest {
         assertAllInputFileMetadataEquals(metadataMap, "CORE-VALID-IDCC", "VERTICES", "20250330-0400-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v1.csv", "2025-03-30T02:00Z/2025-03-30T03:00Z");
     }
 
-
     @Test
     void checkEmptyFileNameGivesNoInterval() {
         mockConfig(
@@ -341,7 +340,6 @@ class FileMetadataProviderTest {
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
         assertAllInputFileMetadataEquals(metadataMap, "CORE-VALID-IDCC", "VERTICES", "", "");
     }
-
 
     void assertAllInputFileMetadataEquals(Map<String, String> actualMetadata, String targetProcess, String fileType, String fileName, String fileValidityInterval) {
         assertEquals(MinioAdapterConstants.DEFAULT_GRIDCAPA_INPUT_GROUP_METADATA_VALUE, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_GROUP_METADATA_KEY));
