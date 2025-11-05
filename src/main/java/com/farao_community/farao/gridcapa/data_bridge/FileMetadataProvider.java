@@ -90,7 +90,7 @@ public class FileMetadataProvider implements MetadataProvider {
         int month = parseOrThrow(matcher, MONTH);
         int day = parseOrThrow(matcher, DAY);
         int hour = parseOrThrow(matcher, "hour");
-        final String minutesDst = matcher.group("minute");
+        final String minutesDst = parseMinutesOrThrow(matcher, "minute");
         final boolean isFileDstNamed = minutesDst.matches("00[abAB]?");
         final int minute = Integer.parseInt(minutesDst.substring(0, 2));
         if (isFileDstNamed) {
@@ -135,6 +135,14 @@ public class FileMetadataProvider implements MetadataProvider {
 
     private String toUtc(LocalDateTime localDateTime) {
         return localDateTime.atZone(ZoneId.of(dataBridgeConfiguration.getZoneId())).withZoneSameInstant(ZoneOffset.UTC).toString();
+    }
+
+    private String parseMinutesOrThrow(Matcher matcher, String groupName) {
+        try {
+            return matcher.group(groupName);
+        } catch (IllegalArgumentException e) {
+            throw new DataBridgeException(String.format("Malformed regex: %s tag is missing.", groupName), e);
+        }
     }
 
     private int parseOrThrow(Matcher matcher, String groupName) {
