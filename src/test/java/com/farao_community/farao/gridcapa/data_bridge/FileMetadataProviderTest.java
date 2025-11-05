@@ -20,6 +20,7 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,10 @@ import java.util.stream.Stream;
 
 import static com.farao_community.farao.gridcapa.data_bridge.FileMetadataProvider.GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Sebastien Murgey {@literal <sebastien.murgey at rte-france.com>}
@@ -258,6 +261,18 @@ class FileMetadataProviderTest {
         final String validityInterval = metadataMap.get(GRIDCAPA_FILE_VALIDITY_INTERVAL_METADATA_KEY);
         assertNotEquals(validityInterval.split("/")[0],
                         validityInterval.split("/")[1]);
+
+        final boolean areOneHourApart = ZonedDateTime.parse(validityInterval.split("/")[0]).plusHours(1L)
+                .isEqual(ZonedDateTime.parse(validityInterval.split("/")[1]));
+
+        if ("02".equals(hourStr) && !"UTC".equals(zone)){
+            // if it's 2 AM at DST, in a DST zone with no indicator (like 2A or 2B),
+            // there's an ambiguity so it doesn't work as it should
+            assertFalse(areOneHourApart);
+        }
+        else {
+            assertTrue(areOneHourApart);
+        }
     }
 
     private static Stream<Arguments> provideParameters() {
