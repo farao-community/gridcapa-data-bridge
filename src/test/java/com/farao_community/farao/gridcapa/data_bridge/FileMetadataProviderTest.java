@@ -47,7 +47,11 @@ class FileMetadataProviderTest {
     @MockitoBean
     private FileMetadataConfiguration fileMetadataConfiguration;
 
-    private void mockConfig(String targetProcess, String fileType, String timeValidity, String fileRegex, String zoneId) {
+    private void mockConfig(String targetProcess,
+                            String fileType,
+                            String timeValidity,
+                            String fileRegex,
+                            String zoneId) {
         Mockito.when(dataBridgeConfiguration.getFiles()).thenReturn(List.of(fileMetadataConfiguration));
         Mockito.when(dataBridgeConfiguration.getTargetProcess()).thenReturn(targetProcess);
         Mockito.when(fileMetadataConfiguration.timeValidity()).thenReturn(timeValidity);
@@ -60,16 +64,16 @@ class FileMetadataProviderTest {
     @Test
     void checkMetadataSetCorrectlyWhenUcteFileIsCorrect() {
         mockConfig(
-            "CSE_D2CC",
-            "CGM",
-            "HOURLY",
-            "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})_.*.(uct|UCT)",
-            "Europe/Paris"
+                "CSE_D2CC",
+                "CGM",
+                "HOURLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})_.*.(uct|UCT)",
+                "Europe/Paris"
         );
         Message<?> ucteFileMessage = MessageBuilder
-            .withPayload("")
-            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_1430_2D5_CSE1.uct")
-            .build();
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_1430_2D5_CSE1.uct")
+                .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
 
@@ -79,16 +83,16 @@ class FileMetadataProviderTest {
     @Test
     void checkMidnightOverpass() {
         mockConfig(
-            "CSE_D2CC",
-            "CGM",
-            "HOURLY",
-            "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})_.*.(uct|UCT)",
-            "UCT"
+                "CSE_D2CC",
+                "CGM",
+                "HOURLY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})_(?<hour>[0-9]{2})(?<minute>[0-9]{2})_.*.(uct|UCT)",
+                "UCT"
         );
         Message<?> ucteFileMessage = MessageBuilder
-            .withPayload("")
-            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_2330_2D5_CSE1.uct")
-            .build();
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_2330_2D5_CSE1.uct")
+                .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
         assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "CGM", "20210101_2330_2D5_CSE1.uct", "2021-01-01T23:30Z/2021-01-02T00:30Z");
@@ -97,16 +101,16 @@ class FileMetadataProviderTest {
     @Test
     void checkMetadataSetCorrectlyWithYearlyFile() {
         mockConfig(
-            "CSE_D2CC",
-            "CGM",
-            "YEARLY",
-            "(?<year>[0-9]{4}).*",
-            "Europe/Paris"
+                "CSE_D2CC",
+                "CGM",
+                "YEARLY",
+                "(?<year>[0-9]{4}).*",
+                "Europe/Paris"
         );
         Message<?> ucteFileMessage = MessageBuilder
-            .withPayload("")
-            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "2021_test.xml")
-            .build();
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "2021_test.xml")
+                .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
 
@@ -154,16 +158,16 @@ class FileMetadataProviderTest {
     @Test
     void checkEmptyTimeValidityIntervalWithYearlyFileAndMalformedFileName() {
         mockConfig(
-            "CSE_D2CC",
-            "CGM",
-            "YEARLY",
-            "(?<year>[0-9]{4}).*",
-            "Europe/Paris"
+                "CSE_D2CC",
+                "CGM",
+                "YEARLY",
+                "(?<year>[0-9]{4}).*",
+                "Europe/Paris"
         );
         Message<?> ucteFileMessage = MessageBuilder
-            .withPayload("")
-            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "test_2021.xml")
-            .build();
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "test_2021.xml")
+                .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap);
 
@@ -173,16 +177,16 @@ class FileMetadataProviderTest {
     @Test
     void checkThrowsDataBridgeExceptionWithYearlyFileAndMalformedRegex() {
         mockConfig(
-            "CSE_D2CC",
-            "CGM",
-            "YEARLY",
-            "(?<month>[0-9]{2}).*",
-            "Europe/Paris"
+                "CSE_D2CC",
+                "CGM",
+                "YEARLY",
+                "(?<month>[0-9]{2}).*",
+                "Europe/Paris"
         );
         Message<?> ucteFileMessage = MessageBuilder
-            .withPayload("")
-            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "09_test.xml")
-            .build();
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "09_test.xml")
+                .build();
         Map<String, String> metadataMap = new HashMap<>();
         assertThrows(DataBridgeException.class, () -> fileMetadataProvider.populateMetadata(ucteFileMessage, metadataMap));
     }
@@ -190,16 +194,16 @@ class FileMetadataProviderTest {
     @Test
     void checkMetadataSetCorrectlyWithDailyFile() {
         mockConfig(
-            "CSE_D2CC",
-            "NTC_RED",
-            "DAILY",
-            "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2}).*",
-            "Europe/Paris"
+                "CSE_D2CC",
+                "NTC_RED",
+                "DAILY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2}).*",
+                "Europe/Paris"
         );
         Message<?> fileMessage = MessageBuilder
-            .withPayload("")
-            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_test.xml")
-            .build();
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_test.xml")
+                .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(fileMessage, metadataMap);
 
@@ -209,16 +213,16 @@ class FileMetadataProviderTest {
     @Test
     void checkThrowsDataBridgeExceptionWithDailyFileAndMalformedRegex() {
         mockConfig(
-            "CSE_D2CC",
-            "NTC_RED",
-            "DAILY",
-            "(?<year>[0-9]{4})(?<month>[0-9]{2}).*",
-            "Europe/Paris"
+                "CSE_D2CC",
+                "NTC_RED",
+                "DAILY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2}).*",
+                "Europe/Paris"
         );
         Message<?> fileMessage = MessageBuilder
-            .withPayload("")
-            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "202002_test.xml")
-            .build();
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "202002_test.xml")
+                .build();
         Map<String, String> metadataMap = new HashMap<>();
         assertThrows(DataBridgeException.class, () -> fileMetadataProvider.populateMetadata(fileMessage, metadataMap));
     }
@@ -226,16 +230,16 @@ class FileMetadataProviderTest {
     @Test
     void checkEmptyTimeValidityIntervalWithDailyFileAndMalformedFileName() {
         mockConfig(
-            "CSE_D2CC",
-            "NTC_RED",
-            "DAILY",
-            "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2}).*",
-            "Europe/Paris"
+                "CSE_D2CC",
+                "NTC_RED",
+                "DAILY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2}).*",
+                "Europe/Paris"
         );
         Message<?> fileMessage = MessageBuilder
-            .withPayload("")
-            .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "test_20210203.xml")
-            .build();
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "test_20210203.xml")
+                .build();
         Map<String, String> metadataMap = new HashMap<>();
         fileMetadataProvider.populateMetadata(fileMessage, metadataMap);
 
@@ -244,7 +248,8 @@ class FileMetadataProviderTest {
 
     @ParameterizedTest
     @MethodSource("provideParameters")
-    void checkHourParsingAtDst(final String hourStr, final String zone) {
+    void checkHourParsingAtDst(final String hourStr,
+                               final String zone) {
         final String regex = "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-3]{1}[0-9]{1})" +
                              "-(?<hour>[0-2]{1}[0-9]{1})(?<minute>00)[abAB]{0,1}" +
                              "-FID2-701-INIT_VIRG_REFBAL_PRES_REPREVERTICES-v(?<version>[0-9]*).(csv|CSV)";
@@ -265,12 +270,11 @@ class FileMetadataProviderTest {
         final boolean areOneHourApart = ZonedDateTime.parse(validityInterval.split("/")[0]).plusHours(1L)
                 .isEqual(ZonedDateTime.parse(validityInterval.split("/")[1]));
 
-        if ("02".equals(hourStr) && !"UTC".equals(zone)){
+        if ("02".equals(hourStr) && !"UTC".equals(zone)) {
             // if it's 2 AM at DST, in a DST zone with no indicator (like 2A or 2B),
             // there's an ambiguity so it doesn't work as it should
             assertFalse(areOneHourApart);
-        }
-        else {
+        } else {
             assertTrue(areOneHourApart);
         }
     }
@@ -289,7 +293,11 @@ class FileMetadataProviderTest {
         );
     }
 
-    void assertAllInputFileMetadataEquals(Map<String, String> actualMetadata, String targetProcess, String fileType, String fileName, String fileValidityInterval) {
+    void assertAllInputFileMetadataEquals(Map<String, String> actualMetadata,
+                                          String targetProcess,
+                                          String fileType,
+                                          String fileName,
+                                          String fileValidityInterval) {
         assertEquals(MinioAdapterConstants.DEFAULT_GRIDCAPA_INPUT_GROUP_METADATA_VALUE, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_GROUP_METADATA_KEY));
         assertEquals(targetProcess, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_TARGET_PROCESS_METADATA_KEY));
         assertEquals(fileType, actualMetadata.get(FileMetadataProvider.GRIDCAPA_FILE_TYPE_METADATA_KEY));
