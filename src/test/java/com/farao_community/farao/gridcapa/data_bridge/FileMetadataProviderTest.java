@@ -48,6 +48,11 @@ class FileMetadataProviderTest {
         Mockito.when(dataBridgeConfiguration.getFileConfigurationFromName(Mockito.anyString())).thenReturn(fileMetadataConfiguration);
     }
 
+    private void mockConfig(final boolean isOnTheHourProcess, final String targetProcess, final String fileType, final String timeValidity, final String fileRegex, final String zoneId) {
+        Mockito.when(dataBridgeConfiguration.isOnTheHourProcess()).thenReturn(isOnTheHourProcess);
+        mockConfig(targetProcess, fileType, timeValidity, fileRegex, zoneId);
+    }
+
     @Test
     void checkMetadataSetCorrectlyWhenUcteFileIsCorrect() {
         mockConfig(
@@ -195,6 +200,26 @@ class FileMetadataProviderTest {
         fileMetadataProvider.populateMetadata(fileMessage, metadataMap);
 
         assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "NTC_RED", "20210101_test.xml", "2020-12-31T23:30Z/2021-01-01T23:30Z");
+    }
+
+    @Test
+    void checkMetadataSetCorrectlyWithDailyFileOnTheHourProcess() {
+        mockConfig(
+                true,
+                "CSE_D2CC",
+                "NTC_RED",
+                "DAILY",
+                "(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2}).*",
+                "Europe/Paris"
+        );
+        Message<?> fileMessage = MessageBuilder
+                .withPayload("")
+                .setHeader(MinioAdapterConstants.DEFAULT_GRIDCAPA_FILE_NAME_METADATA_KEY, "20210101_test.xml")
+                .build();
+        Map<String, String> metadataMap = new HashMap<>();
+        fileMetadataProvider.populateMetadata(fileMessage, metadataMap);
+
+        assertAllInputFileMetadataEquals(metadataMap, "CSE_D2CC", "NTC_RED", "20210101_test.xml", "2020-12-31T23:00Z/2021-01-01T23:00Z");
     }
 
     @Test
