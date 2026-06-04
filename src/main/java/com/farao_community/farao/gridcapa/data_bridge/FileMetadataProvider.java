@@ -124,12 +124,14 @@ public class FileMetadataProvider implements MetadataProvider {
         return dstBeginningDateTime + "/" + dstEndingDateTime;
     }
 
-    private String getDailyFileValidityIntervalMetadata(Matcher matcher) {
-        int year = parseOrThrow(matcher, YEAR);
-        int month = parseOrThrow(matcher, MONTH);
-        int day = parseOrThrow(matcher, DAY);
-        LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, 0, 30);
-        LocalDateTime endDateTime = beginDateTime.plusDays(1);
+    private String getDailyFileValidityIntervalMetadata(final Matcher matcher) {
+        final int year = parseOrThrow(matcher, YEAR);
+        final int month = parseOrThrow(matcher, MONTH);
+        final int day = parseOrThrow(matcher, DAY);
+        final LocalDateTime beginDateTime = dataBridgeConfiguration.isOnTheHourProcess()
+                ? LocalDateTime.of(year, month, day, 0, 0)
+                : LocalDateTime.of(year, month, day, 0, 30);
+        final LocalDateTime endDateTime = beginDateTime.plusDays(1);
         return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
     }
 
