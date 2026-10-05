@@ -14,6 +14,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import org.aopalliance.aop.Advice;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.aws.outbound.S3MessageHandler;
 import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.handler.advice.ExpressionEvaluatingRequestHandlerAdvice;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
@@ -49,13 +51,20 @@ public class MinioSink {
     }
 
     @Bean
-    @ServiceActivator(inputChannel = "filesChannel")
+    @ServiceActivator(inputChannel = "filesChannel", adviceChain = {"deleteTempFileOnSuccess"})
     public MessageHandler s3MessageHandler(FileMetadataProvider fileMetadataProvider) {
         S3MessageHandler s3MessageHandler = new S3MessageHandler(amazonS3(), bucket);
         Expression keyExpression = new SpelExpressionParser().parseExpression("'" + baseDirectory + "' +  headers.file_sink + '/' + headers.file_name");
         s3MessageHandler.setKeyExpression(keyExpression);
         s3MessageHandler.setUploadMetadataProvider((objectMetadata, message) -> fileMetadataProvider.populateMetadata(message, objectMetadata.getUserMetadata()));
         return s3MessageHandler;
+    }
+
+    @Bean(name = "deleteTempFileOnSuccess")
+    public Advice deleteTempFileOnSuccess() {
+        ExpressionEvaluatingRequestHandlerAdvice advice = new ExpressionEvaluatingRequestHandlerAdvice();
+        advice.setOnSuccessExpressionString("headers['file_originalFile'].delete()");
+        return advice;
     }
 
     private AmazonS3 amazonS3() {
