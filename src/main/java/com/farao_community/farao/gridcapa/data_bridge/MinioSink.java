@@ -62,7 +62,7 @@ public class MinioSink {
 
     @Bean(name = "deleteTempFileOnSuccess")
     public Advice deleteTempFileOnSuccess() {
-        ExpressionEvaluatingRequestHandlerAdvice advice = new ExpressionEvaluatingRequestHandlerAdvice();
+        final ExpressionEvaluatingRequestHandlerAdvice advice = new ExpressionEvaluatingRequestHandlerAdvice();
         advice.setOnSuccessExpressionString("headers['file_originalFile'].delete()");
         return advice;
     }
