@@ -128,9 +128,8 @@ public class FileMetadataProvider implements MetadataProvider {
         final int year = parseOrThrow(matcher, YEAR);
         final int month = parseOrThrow(matcher, MONTH);
         final int day = parseOrThrow(matcher, DAY);
-        final LocalDateTime beginDateTime = dataBridgeConfiguration.isOnTheHourProcess()
-                ? LocalDateTime.of(year, month, day, 0, 0)
-                : LocalDateTime.of(year, month, day, 0, 30);
+        final int minutes = dataBridgeConfiguration.isOnTheHourProcess() ? 0 : 30;
+        final LocalDateTime beginDateTime = LocalDateTime.of(year, month, day, 0, minutes);
         final LocalDateTime endDateTime = beginDateTime.plusDays(1);
         return toUtc(beginDateTime) + "/" + toUtc(endDateTime);
     }
