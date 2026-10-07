@@ -2,6 +2,7 @@ data-bridge:
   configuration:
 #    zone-id: "Europe/Paris"
     target-process: CSE_D2CC
+    isOnTheHourProcess: false
     files:
       - file-type: CGM
         file-regex: regex_test

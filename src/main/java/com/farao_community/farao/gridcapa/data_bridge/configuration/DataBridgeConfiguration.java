@@ -19,11 +19,13 @@ public class DataBridgeConfiguration {
 
     private final String targetProcess;
     private final String zoneId;
+    private final boolean isOnTheHourProcess;
     private final List<FileMetadataConfiguration> files;
 
-    public DataBridgeConfiguration(String targetProcess, String zoneId, List<FileMetadataConfiguration> files) {
+    public DataBridgeConfiguration(String targetProcess, String zoneId, boolean isOnTheHourProcess, List<FileMetadataConfiguration> files) {
         this.targetProcess = targetProcess;
         this.zoneId = zoneId;
+        this.isOnTheHourProcess = isOnTheHourProcess;
         this.files = files;
     }
 
@@ -33,6 +35,10 @@ public class DataBridgeConfiguration {
 
     public String getZoneId() {
         return zoneId;
+    }
+
+    public boolean isOnTheHourProcess() {
+        return isOnTheHourProcess;
     }
 
     public List<FileMetadataConfiguration> getFiles() {
